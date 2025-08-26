@@ -37,8 +37,8 @@
 
                     {{-- Menu Guru --}}
                     @if(auth()->user()->role == 'guru')
-                        <x-nav-link :href="url('/pinjam')" :active="request()->is('pinjam')">
-                            Pinjam Buku
+                        <x-nav-link :href="url('/guru/books')" :active="request()->is('index')">
+                            Buku
                         </x-nav-link>
                         <x-nav-link :href="url('/history')" :active="request()->is('history')">
                             History

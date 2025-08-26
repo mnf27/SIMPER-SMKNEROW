@@ -19,6 +19,12 @@ class Loan extends Model
         'catatan',
     ];
 
+    protected $casts = [
+        'tanggal_peminjaman' => 'date',
+        'tanggal_jatuh_tempo' => 'date',
+        'tanggal_pengembalian' => 'date',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -27,5 +33,18 @@ class Loan extends Model
     public function book()
     {
         return $this->belongsTo(Book::class);
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        if ($this->tanggal_pengembalian) {
+            return 'dikembalikan';
+        }
+
+        if ($this->tanggal_jatuh_tempo && $this->tanggal_jatuh_tempo->isPast()) {
+            return 'terlambat';
+        }
+
+        return 'aktif';
     }
 }

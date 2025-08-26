@@ -12,13 +12,20 @@ class LoanController extends Controller
 {
     public function index()
     {
-        $loans = Loan::with(['user', 'buku'])->latest()->paginate(10);
+        $loans = Loan::with(['user', 'book'])->latest()->paginate(10);
 
         return view('admin.loans.index', compact('loans'));
     }
 
+    public function table()
+    {
+        $loans = Loan::with(['user', 'book'])->latest()->paginate(10);
+
+        return view('admin.loans.table', compact('loans'));
+    }
+
     public function exportExcel()
-{
-    return Excel::download(new LoansExport, 'laporan_peminjaman.xlsx');
-}
+    {
+        return Excel::download(new LoansExport, 'laporan_peminjaman.xlsx');
+    }
 }

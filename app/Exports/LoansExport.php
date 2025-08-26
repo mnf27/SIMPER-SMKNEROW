@@ -14,7 +14,7 @@ class LoansExport implements FromCollection, WithHeadings, WithMapping
      */
     public function collection()
     {
-        return Loan::with(['user', 'buku'])->get();
+        return Loan::with(['user', 'book'])->get();
     }
 
     public function map($loans): array
@@ -22,7 +22,7 @@ class LoansExport implements FromCollection, WithHeadings, WithMapping
         return [
             $loans->id,
             $loans->user->nama ?? $loans->user->email,
-            $loans->buku->judul ?? '-',
+            $loans->books->judul ?? '-',
             $loans->tanggal_peminjaman,
             $loans->tanggal_jatuh_tempo,
             $loans->tanggal_pengembalian ?? '-',
