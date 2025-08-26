@@ -9,10 +9,25 @@ class Book extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'author', 'category_id', 'stock'];
+    protected $fillable = [
+        'judul',
+        'penulis',
+        'isbn',
+        'category_id',
+        'penerbit',
+        'tahun_terbit',
+        'stok',
+        'cover_image',
+        'deskripsi',
+    ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
     }
 }

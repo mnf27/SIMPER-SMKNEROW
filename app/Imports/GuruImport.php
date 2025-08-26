@@ -2,35 +2,35 @@
 
 namespace App\Imports;
 
-use App\Models\Guru;
 use App\Models\User;
+use App\Models\Guru;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class GuruImport implements ToModel, WithHeadingRow
 {
-    public function modal(array $row)
+    /**
+     * @param array $row
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function model(array $row)
     {
-        $guru = Guru::updateOrCreate(
-            ['nip' => $row['nip']],
-            [
-                'nama' => $row['nama'],
-                'email' => $row['email'],
-                'alamat' => $row['alamat'] ?? null,
-                'no_telp' => $row['no_telp'] ?? null,
-            ]
-        );
-
-        User::updateOrCreate(
+        $user = User::firstOrCreate(
             ['email' => $row['email']],
             [
-                'name' => $row['nama'],
+                'password' => Hash::make('simperpus123'),
                 'role' => 'guru',
-                'password' => Hash::make($row['nip']),
             ]
         );
 
-        return $guru;
+        return Guru::updateOrCreate(
+            ['nip' => $row['nip']],
+            [
+                'user_id' => $user->id,
+                'nama' => $row['nama'],
+            ]
+        );
     }
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\BooksImport;
 
 class BookController extends Controller
 {
@@ -15,9 +17,7 @@ class BookController extends Controller
     public function index()
     {
         $books = Book::with('category')->get();
-        $categories = Category::all();
-        
-        return view('admin.books.index', compact('books', 'categories'));
+        return view('admin.books.index', compact('books'));
     }
 
     /**
@@ -35,15 +35,27 @@ class BookController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
-            'author' => 'required',
+            'judul' => 'required|string|max:255',
+            'penulis' => 'required|string|max:255',
+            'isbn' => 'required|unique:books',
             'category_id' => 'required|exists:categories,id',
-            'stock' => 'required',
+            'penerbit' => 'required|string|max:255',
+            'tahun_terbit' => 'required|digits:4|integer',
+            'stok' => 'required|integer|min:0',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'deskripsi' => 'nullable|string',
         ]);
 
-        Book::create($request->all());
+        $data = $request->all();
 
-        return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan.');
+        // upload cover
+        if ($request->hasFile('cover_image')) {
+            $data['cover_image'] = $request->file('cover_image')->store('covers', 'public');
+        }
+
+        Book::create($data);
+
+        return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan!');
     }
 
     /**
@@ -69,15 +81,26 @@ class BookController extends Controller
     public function update(Request $request, Book $book)
     {
         $request->validate([
-            'title' => 'required',
-            'author' => 'required',
+            'judul' => 'required|string|max:255',
+            'penulis' => 'required|string|max:255',
+            'isbn' => 'required|unique:books,isbn,' . $book->id,
             'category_id' => 'required|exists:categories,id',
-            'stock' => 'required',
+            'penerbit' => 'required|string|max:255',
+            'tahun_terbit' => 'required|digits:4|integer',
+            'stok' => 'required|integer|min:0',
+            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'deskripsi' => 'nullable|string',
         ]);
 
-        $book->update($request->all());
+        $data = $request->all();
 
-        return redirect()->route('books.index')->with('success', 'Buku berhasil diperbarui.');
+        if ($request->hasFile('cover_image')) {
+            $data['cover_image'] = $request->file('cover_image')->store('covers', 'public');
+        }
+
+        $book->update($data);
+
+        return redirect()->route('books.index')->with('success', 'Buku berhasil diperbarui!!');
     }
 
     /**
@@ -86,6 +109,17 @@ class BookController extends Controller
     public function destroy(Book $book)
     {
         $book->delete();
-        return redirect()->route('book.index')->with('success', 'Buku berhasil dihapus.');
+        return redirect()->route('books.index')->with('succes', 'Buku berhasil diperbarui!');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls',
+        ]);
+
+        Excel::import(new BooksImport, $request->file('file'));
+
+        return redirect()->route('books.index')->with('success', 'data buku berhasil diimport!');
     }
 }

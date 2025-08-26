@@ -1,46 +1,44 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Kelola Kategori Buku
         </h2>
     </x-slot>
 
     <div class="py-6 max-w-4xl mx-auto">
         @if(session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+            <div class="bg-green-200 text-green-800 p-3 rounded mb-4">
                 {{ session('success') }}
             </div>
         @endif
 
-        <div class="mb-4 flex justify-end">
-            <a href="{{ route('categories.create') }}"
-                class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow">
-                + Tambah Kategori
-            </a>
-        </div>
+        <a href="{{ route('categories.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded">+ Tambah
+            Kategori</a>
 
-        <div class="bg-white dark:bg-gray-800 shadow-md rounded p-4 overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-100 dark:bg-gray-700">
-                    <tr class="border-b">
-                        <th class="py-2 px-3">Id</th>
-                        <th class="py-2 px-3">Nama Kategori</th>
-                        <th class="py-2 px-3">Aksi</th>
+        <div class="mt-4 bg-white shadow rounded-lg p-4">
+            <table class="w-full border">
+                <thead>
+                    <tr class="bg-gray-100 text-left">
+                        <th class="p-2 border">#</th>
+                        <th class="p-2 border">Nama</th>
+                        <th class="p-2 border">Deskripsi</th>
+                        <th class="p-2 border">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($categories as $i => $category)
-                        <tr class="border-b hover:bg-gray-50 dark:hover:bg-gray-700">
-                            <td class="py-2 px-3">{{ $i + 1 }}</td>
-                            <td class="py-2 px-3 font-medium">{{ $category->name }}</td>
-                            <td class="py-2 px-3 flex gap-2">
+                    @forelse($categories as $category)
+                        <tr>
+                            <td class="p-2 border">{{ $loop->iteration }}</td>
+                            <td class="p-2 border">{{ $category->nama }}</td>
+                            <td class="p-2 border">{{ $category->deskripsi }}</td>
+                            <td class="p-2 border">
                                 <a href="{{ route('categories.edit', $category) }}"
-                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">Edit</a>
-                                <form method="POST" action="{{ route('categories.destroy', $category) }}">
+                                    class="bg-yellow-500 text-white px-3 py-1 rounded">Edit</a>
+                                <form action="{{ route('categories.destroy', $category) }}" method="POST"
+                                    class="inline-block" onsubmit="return confirm('Yakin hapus?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button onclick="return confirm('Yakin hapus?')"
-                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                                    <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded">
                                         Hapus
                                     </button>
                                 </form>
@@ -48,7 +46,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="text-center py-3">Belum ada kategori</td>
+                            <td colspan="4" class="p-2 text-center">Belum ada kategori</td>
                         </tr>
                     @endforelse
                 </tbody>

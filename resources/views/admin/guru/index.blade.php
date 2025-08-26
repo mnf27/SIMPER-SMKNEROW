@@ -1,62 +1,42 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Kelola Guru
         </h2>
     </x-slot>
 
-    <div class="py-6 max-w-6xl mx-auto">
-        {{-- Alert sukses --}}
+    <div class="py-6 max-w-4xl mx-auto">
         @if(session('success'))
-            <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-800">
+            <div class="bg-green-200 text-green-700 p-3 rounded mb-4">
                 {{ session('success') }}
             </div>
         @endif
 
-        {{-- Form Import Data --}}
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
-            <form action="{{ route('guru.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col md:flex-row items-center gap-4">
-                @csrf
-                <input type="file" name="file"
-                       class="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-lg px-4 py-2 w-full md:w-1/2 text-sm"
-                       required>
-                <button type="submit"
-                        class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">
-                    Import Data
-                </button>
-            </form>
-        </div>
+        <!-- Form Upload Excel -->
+        <form action="{{ route('guru.import') }}" method="POST" enctype="multipart/form-data" class="mb-6">
+            @csrf
+            <input type="file" name="file" required class="border p-2 rounded">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Import</button>
+        </form>
 
-        {{-- Tabel Data Guru --}}
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 overflow-x-auto">
-            <table class="min-w-full border border-gray-200 dark:border-gray-700 text-sm">
-                <thead class="bg-gray-100 dark:bg-gray-700">
+        <!-- Tabel Guru -->
+        <table class="w-full border-collapse border">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border p-2">NIP</th>
+                    <th class="border p-2">Nama</th>
+                    <th class="border p-2">Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($guru as $g)
                     <tr>
-                        <th class="px-4 py-2 text-left">NIP</th>
-                        <th class="px-4 py-2 text-left">Nama</th>
-                        <th class="px-4 py-2 text-left">Email</th>
-                        <th class="px-4 py-2 text-left">Alamat</th>
-                        <th class="px-4 py-2 text-left">No. Telp</th>
+                        <td class="border p-2">{{ $g->nip }}</td>
+                        <td class="border p-2">{{ $g->nama }}</td>
+                        <td class="border p-2">{{ $g->email }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    @forelse($gurus as $guru)
-                        <tr class="border-t border-gray-200 dark:border-gray-700">
-                            <td class="px-4 py-2">{{ $guru->nip }}</td>
-                            <td class="px-4 py-2">{{ $guru->nama }}</td>
-                            <td class="px-4 py-2">{{ $guru->email }}</td>
-                            <td class="px-4 py-2">{{ $guru->alamat }}</td>
-                            <td class="px-4 py-2">{{ $guru->no_telp }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-                                Belum ada data guru
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </x-app-layout>

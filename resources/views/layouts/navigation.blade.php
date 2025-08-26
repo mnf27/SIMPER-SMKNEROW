@@ -27,9 +27,7 @@
                         <x-nav-link :href="route('guru.index')" :active="request()->routeIs('guru.*')">
                             Kelola Guru
                         </x-nav-link>
-                        <x-nav-link :href="route('siswa.index')" :active="request()->routeIs('siswa.*')">
-                            Kelola Siswa
-                        </x-nav-link>
+                        
                     @endif
 
                     {{-- Menu Guru --}}

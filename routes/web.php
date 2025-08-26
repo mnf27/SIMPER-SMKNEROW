@@ -14,12 +14,16 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::middleware('role:admin')->group(function () {
+        //Kategori
         Route::resource('categories', CategoryController::class);
+
+        // Buku
         Route::resource('books', BookController::class);
-        Route::get('/admin/guru', [GuruController::class, 'index'])->name('guru.index');
-        Route::post('/admin/guru/import', [GuruController::class, 'import'])->name('guru.import');
-        Route::resource('siswa', SiswaController::class);
-        Route::get('/export-laporan', [ReportController::class, 'export']);
+        Route::post('books/import', [BookController::class, 'import'])->name('books.import');
+
+        // Guru
+        Route::resource('guru', GuruController::class)->only(['index']);
+        Route::post('guru/import', [GuruController::class, 'import'])->name('guru.import');
     });
 
     Route::middleware('role:guru')->group(function () {
