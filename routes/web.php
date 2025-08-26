@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\SiswaController;
+use App\Http\Controllers\Admin\LoanController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,13 @@ Route::middleware(['auth'])->group(function () {
         // Guru
         Route::resource('guru', GuruController::class)->only(['index']);
         Route::post('guru/import', [GuruController::class, 'import'])->name('guru.import');
+
+        // Siswa
+        Route::resource('siswa', SiswaController::class)->only(['index']);
+        Route::post('siswa/import', [SiswaController::class, 'import'])->name('siswa.import');
+
+        Route::resource('loans', LoanController::class)->only(['index']);
+        Route::get('/peminjaman/export/excel', [LoanController::class, 'exportExcel'])->name('loan.export.excel');
     });
 
     Route::middleware('role:guru')->group(function () {

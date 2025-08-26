@@ -17,17 +17,17 @@ class GuruImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        $user = User::firstOrCreate(
-            ['email' => $row['email']],
+        $user = User::create(
             [
+                'email' => $row['email'],
                 'password' => Hash::make('simperpus123'),
                 'role' => 'guru',
             ]
         );
 
-        return Guru::updateOrCreate(
-            ['nip' => $row['nip']],
+        return new Guru(
             [
+                'nip' => $row['nip'],
                 'user_id' => $user->id,
                 'nama' => $row['nama'],
             ]

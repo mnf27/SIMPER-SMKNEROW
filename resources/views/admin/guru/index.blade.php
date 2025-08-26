@@ -33,7 +33,7 @@
                     <tr>
                         <td class="border p-2">{{ $g->nip }}</td>
                         <td class="border p-2">{{ $g->nama }}</td>
-                        <td class="border p-2">{{ $g->email }}</td>
+                        <td class="border p-2">{{ $g->user->email }}</td>
                     </tr>
                 @endforeach
             </tbody>
