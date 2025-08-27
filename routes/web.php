@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\LoanController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,9 +31,14 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('siswa', SiswaController::class)->only(['index']);
         Route::post('siswa/import', [SiswaController::class, 'import'])->name('siswa.import');
 
+        // Peminjaman
         Route::resource('loans', LoanController::class)->only(['index']);
         Route::get('/loans/export/excel', [LoanController::class, 'exportExcel'])->name('loan.export.excel');
         Route::get('/loans/table', [LoanController::class, 'table'])->name('admin.loans.table');
+
+        // Report
+        Route::resource('reports', ReportController::class)->only(['index']);
+        Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
     });
 
     Route::middleware('role:guru')->group(function () {
