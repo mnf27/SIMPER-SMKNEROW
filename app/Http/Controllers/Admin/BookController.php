@@ -118,8 +118,19 @@ class BookController extends Controller
             'file' => 'required|mimes:xlsx,csv,xls',
         ]);
 
-        Excel::import(new BooksImport, $request->file('file'));
+        $import = new BooksImport;
+        Excel::import($import, $request->file('file'));
 
-        return redirect()->route('books.index')->with('success', 'data buku berhasil diimport!');
+        $messages = [];
+
+        if ($import->added > 0) {
+            $messages[] = $import->added . " Data berhasil diimport.";
+        }
+        
+        if ($import->skipped > 0) {
+            $messages[] = $import->skipped . " Data tidak diimport, karena data sudah ada";
+        }
+
+        return redirect()->route('books.index')->with('success', implode(' ', $messages));
     }
 }

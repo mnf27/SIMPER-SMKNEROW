@@ -14,13 +14,26 @@ class BooksImport implements ToModel, WithHeadingRow
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
+
+    public $added = 0;
+    public $skipped = 0;
+    
     public function model(array $row)
     {
+        $exists = Book::where('isbn', $row['isbn'])->exists();
+
+        if ($exists) {
+            $this->skipped++;
+            return null;
+        }
+
+        $this->added++;
+
         return new Book([
             'judul' => $row['judul'],
             'penulis' => $row['penulis'],
             'isbn' => $row['isbn'],
-            'category_id' => Category::where('nama', $row['kategori'])->first()->id ?? null,
+            'category_id' => Category::where('nama', $row['kategori'])->value('id'),
             'penerbit' => $row['penerbit'],
             'tahun_terbit' => $row['tahun_terbit'],
             'stok' => $row['stok'],
