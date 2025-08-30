@@ -31,8 +31,12 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|string|max:255|unique:categories,nama',
             'deskripsi' => 'nullable|string',
+        ], [
+            'nama.required' => 'Nama kategori wajib diisi.',
+            'nama.unique' => 'Kategori sudah ada, silahkan masukkan kategori lain.',
+            'nama.max' => 'Nama kategori maksimal 255 karakter.',
         ]);
 
         Category::create($request->only('nama', 'deskripsi'));
@@ -63,8 +67,12 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|string|max:255|unique:categories,nama,' . $category->id,
             'deskripsi' => 'nullable|string',
+        ], [
+            'nama.required' => 'Nama kategori wajib diisi.',
+            'nama.unique' => 'Kategori sudah ada, silahkan masukkan kategori lain.',
+            'nama.max' => 'Nama kategori maksimal 255 karakter.',
         ]);
 
         $category->update($request->only('nama', 'deskripsi'));

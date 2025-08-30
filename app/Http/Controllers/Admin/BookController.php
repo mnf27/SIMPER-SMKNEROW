@@ -8,6 +8,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\BooksImport;
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -92,9 +93,22 @@ class BookController extends Controller
             'deskripsi' => 'nullable|string',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['cover_image', 'remove_cover']);
 
+        if ($request->has('remove_cover') && $request->remove_cover == 1) {
+            if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
+                Storage::disk('public')->delete($book->cover_image);
+            }
+            $data['cover_image'] = null; // kosongkan di database
+        }
+
+        // 3. Jika user upload cover baru
         if ($request->hasFile('cover_image')) {
+            // Hapus yang lama dulu
+            if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
+                Storage::disk('public')->delete($book->cover_image);
+            }
+            // Simpan yang baru
             $data['cover_image'] = $request->file('cover_image')->store('covers', 'public');
         }
 
@@ -108,7 +122,12 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
+        if ($book->cover_image) {
+            Storage::disk('public')->delete($book->cover_image);
+        }
+
         $book->delete();
+
         return redirect()->route('books.index')->with('succes', 'Buku berhasil diperbarui!');
     }
 
@@ -126,7 +145,7 @@ class BookController extends Controller
         if ($import->added > 0) {
             $messages[] = $import->added . " Data berhasil diimport.";
         }
-        
+
         if ($import->skipped > 0) {
             $messages[] = $import->skipped . " Data tidak diimport, karena data sudah ada";
         }

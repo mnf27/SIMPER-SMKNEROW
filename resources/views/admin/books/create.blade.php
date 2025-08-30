@@ -59,9 +59,14 @@
 
                 <div>
                     <label class="block font-medium">Tahun Terbit</label>
-                    <input type="number" name="tahun_terbit" value="{{ old('tahun_terbit') }}"
-                        class="w-full border rounded p-2" required>
+                    <input type="text" name="tahun_terbit" value="{{ old('tahun_terbit') }}"
+                        class="w-full border rounded p-2" pattern="\d{4}" maxlength="4" required
+                        placeholder="contoh: 2020">
+                    @error('tahun_terbit')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
+
 
                 <div>
                     <label class="block font-medium">Stok</label>
@@ -71,7 +76,18 @@
 
                 <div>
                     <label class="block font-medium">Cover (Opsional)</label>
-                    <input type="file" name="cover_image" accept="image/*" class="w-full border rounded p-2">
+                    {{-- Preview gambar --}}
+                    <div id="previewWrapper" class="mt-3 hidden">
+                        <img id="preview" src="#" alt="Preview Cover" class="max-h-48 rounded border mb-2">
+                        <div>
+                        <button type="button" onclick="clearImage()"
+                            class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
+                            Hapus Gambar
+                        </button>
+                        </div>
+                    </div>
+                    <input type="file" name="cover_image" id="cover_image" accept="image/*"
+                        class="w-full border rounded p-2" onchange="previewImage(event)">
                 </div>
 
                 <div>
@@ -87,4 +103,36 @@
             </form>
         </div>
     </div>
+
+
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('preview');
+            const wrapper = document.getElementById('previewWrapper');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    wrapper.classList.remove('hidden'); // tampilkan wrapper
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                clearImage();
+            }
+        }
+
+        function clearImage() {
+            const input = document.getElementById('cover_image');
+            const preview = document.getElementById('preview');
+            const wrapper = document.getElementById('previewWrapper');
+
+            input.value = ""; // reset file input
+            preview.src = "#";
+            wrapper.classList.add('hidden'); // sembunyikan preview + tombol
+        }
+    </script>
 </x-app-layout>

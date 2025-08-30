@@ -81,14 +81,27 @@
                 {{-- Cover --}}
                 <div>
                     <label class="block font-medium">Cover (Opsional)</label>
-                    @if($book->cover_image)
-                        <div class="mb-2">
-                            <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover {{ $book->judul }}"
-                                class="h-24 rounded shadow">
+
+                    {{-- Preview gambar --}}
+                    <div id="previewWrapper" class="mt-3 {{ $book->cover_image ? '' : 'hidden' }}">
+                        <img id="preview" src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : '#' }}"
+                            alt="Preview Cover" class="max-h-48 rounded border mb-2">
+
+                        <div>
+                            <button type="button" onclick="clearImage()"
+                                class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
+                                Hapus Gambar
+                            </button>
                         </div>
-                    @endif
-                    <input type="file" name="cover_image" accept="image/*" class="w-full border rounded p-2">
+                    </div>
+
+                    <input type="file" name="cover_image" id="cover_image" accept="image/*"
+                        class="w-full border rounded p-2" onchange="previewImage(event)">
+
+                    {{-- Flag untuk hapus cover lama --}}
+                    <input type="hidden" name="remove_cover" id="remove_cover" value="0">
                 </div>
+
 
                 {{-- Deskripsi --}}
                 <div>
@@ -105,4 +118,35 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('preview');
+            const wrapper = document.getElementById('previewWrapper');
+            const removeCover = document.getElementById('remove_cover');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    wrapper.classList.remove('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+                removeCover.value = 0; // kalau upload baru, reset flag
+            }
+        }
+
+        function clearImage() {
+            const input = document.getElementById('cover_image');
+            const preview = document.getElementById('preview');
+            const wrapper = document.getElementById('previewWrapper');
+            const removeCover = document.getElementById('remove_cover');
+
+            input.value = "";
+            preview.src = "#";
+            wrapper.classList.add('hidden');
+            removeCover.value = 1; // kasih flag hapus cover
+        }
+    </script>
 </x-app-layout>

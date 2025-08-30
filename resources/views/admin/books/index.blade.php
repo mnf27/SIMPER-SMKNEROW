@@ -45,9 +45,9 @@
                         <tr>
                             <td class="p-2 border text-center">{{ $loop->iteration }}</td>
                             <td class="p-2 border text-center">
-                                @if($book->cover_image)
+                                @if ($book->cover_image)
                                     <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover {{ $book->judul }}"
-                                        class="h-16 mx-auto rounded">
+                                        class="h-16 w-auto mx-auto rounded shadow">
                                 @else
                                     <span class="text-gray-400">-</span>
                                 @endif
