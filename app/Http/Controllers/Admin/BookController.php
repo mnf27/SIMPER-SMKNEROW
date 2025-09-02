@@ -143,11 +143,15 @@ class BookController extends Controller
         $messages = [];
 
         if ($import->added > 0) {
-            $messages[] = $import->added . " Data berhasil diimport.";
+            $messages[] = $import->added . " data berhasil diimport.";
         }
 
         if ($import->skipped > 0) {
-            $messages[] = $import->skipped . " Data tidak diimport, karena data sudah ada";
+            $messages[] = $import->skipped . " data dilewati (duplikat ISBN).";
+        }
+
+        if ($import->invalid > 0) {
+            $messages[] = $import->invalid . " data dilewati (judul/ISBN kosong).";
         }
 
         return redirect()->route('books.index')->with('success', implode(' ', $messages));

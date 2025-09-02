@@ -2,8 +2,7 @@
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-gray-900 flex items-center gap-2">
             <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M12 4v16m8-8H4" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             Tambah Buku
         </h2>
@@ -31,32 +30,28 @@
                 {{-- Judul --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Judul</label>
-                    <input type="text" name="judul" value="{{ old('judul') }}" 
-                           class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                    <input type="text" name="judul" value="{{ old('judul') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
                                   focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
                 </div>
 
                 {{-- Penulis --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Penulis</label>
-                    <input type="text" name="penulis" value="{{ old('penulis') }}" 
-                           class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                    <input type="text" name="penulis" value="{{ old('penulis') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
                                   focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
                 </div>
 
                 {{-- ISBN --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">ISBN</label>
-                    <input type="text" name="isbn" value="{{ old('isbn') }}" 
-                           class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                    <input type="text" name="isbn" value="{{ old('isbn') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
                                   focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
                 </div>
 
                 {{-- Kategori --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Kategori</label>
-                    <select name="category_id" 
-                            class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                    <select name="category_id" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
                                    focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
                         <option value="">-- Pilih Kategori --</option>
                         @foreach ($categories as $category)
@@ -70,18 +65,16 @@
                 {{-- Penerbit --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Penerbit</label>
-                    <input type="text" name="penerbit" value="{{ old('penerbit') }}" 
-                           class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                    <input type="text" name="penerbit" value="{{ old('penerbit') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
                                   focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
                 </div>
 
                 {{-- Tahun Terbit --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Tahun Terbit</label>
-                    <input type="text" name="tahun_terbit" value="{{ old('tahun_terbit') }}" 
-                           class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
-                                  focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5"
-                           pattern="\d{4}" maxlength="4" placeholder="contoh: 2020" required>
+                    <input type="text" name="tahun_terbit" value="{{ old('tahun_terbit') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                                  focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" pattern="\d{4}"
+                        maxlength="4" placeholder="contoh: 2020" required>
                     @error('tahun_terbit')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -90,8 +83,7 @@
                 {{-- Stok --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Stok</label>
-                    <input type="number" name="stok" value="{{ old('stok') }}" 
-                           class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                    <input type="number" name="stok" value="{{ old('stok') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
                                   focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
                 </div>
 
@@ -99,37 +91,36 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Cover (Opsional)</label>
                     <div id="previewWrapper" class="mt-3 hidden text-center">
-                        <img id="preview" src="#" alt="Preview Cover" 
-                             class="max-h-48 rounded-xl border-2 border-dashed p-2 mb-3 mx-auto shadow-sm bg-gray-50">
+                        <img id="preview" src="#" alt="Preview Cover"
+                            class="max-h-48 rounded-xl border-2 border-dashed p-2 mb-3 mx-auto shadow-sm bg-gray-50">
                         <div>
-                            <button type="button" onclick="clearImage()" 
-                                    class="bg-red-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-red-600 transition">
+                            <button type="button" onclick="clearImage()"
+                                class="bg-red-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-red-600 transition">
                                 Hapus Gambar
                             </button>
                         </div>
                     </div>
-                    <input type="file" name="cover_image" id="cover_image" accept="image/*"
-                           class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                    <input type="file" name="cover_image" id="cover_image" accept="image/*" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
                                   focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5 mt-2"
-                           onchange="previewImage(event)">
+                        onchange="previewImage(event)">
                 </div>
 
                 {{-- Deskripsi --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-800 mb-1">Deskripsi</label>
-                    <textarea name="deskripsi" rows="4" 
-                              class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
+                    <textarea name="deskripsi" rows="4"
+                        class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm 
                                      focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5">{{ old('deskripsi') }}</textarea>
                 </div>
 
                 {{-- Tombol --}}
                 <div class="flex justify-end gap-3 pt-6">
-                    <a href="{{ route('books.index') }}" 
-                       class="px-5 py-2.5 rounded-xl bg-gray-400 text-white shadow hover:bg-gray-500 transition">
+                    <a href="{{ route('books.index') }}"
+                        class="px-5 py-2.5 rounded-xl bg-gray-400 text-white shadow hover:bg-gray-500 transition">
                         Batal
                     </a>
-                    <button type="submit" 
-                            class="px-5 py-2.5 rounded-xl bg-blue-500 text-white shadow hover:bg-blue-600 transition">
+                    <button type="submit"
+                        class="px-5 py-2.5 rounded-xl bg-blue-500 text-white shadow hover:bg-blue-600 transition">
                         Simpan
                     </button>
                 </div>
@@ -145,7 +136,7 @@
 
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     preview.src = e.target.result;
                     wrapper.classList.remove('hidden');
                 }

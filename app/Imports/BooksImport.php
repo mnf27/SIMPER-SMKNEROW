@@ -17,26 +17,45 @@ class BooksImport implements ToModel, WithHeadingRow
 
     public $added = 0;
     public $skipped = 0;
-    
+    public $invalid = 0;
+
     public function model(array $row)
     {
-        $exists = Book::where('isbn', $row['isbn'])->exists();
+        if (empty(array_filter($row))) {
+            return null;
+        }
 
-        if ($exists) {
+        unset($row['no']);
+
+        $judul = isset($row['judul']) ? trim((string) $row['judul']) : null;
+        $isbn = isset($row['isbn']) ? trim((string) $row['isbn']) : null;
+
+        if ($judul === null || $judul === '' || $isbn === null || $isbn === '') {
+            $this->invalid++;
+            return null;
+        }
+
+        if (Book::where('isbn', $isbn)->exists()) {
             $this->skipped++;
             return null;
+        }
+
+        $categoryId = null;
+        if (!empty($row['kategori'])) {
+            $categoryId = Category::whereRaw('LOWER(nama) = ?', [mb_strtolower(trim($row['kategori']))])
+                ->value('id');
         }
 
         $this->added++;
 
         return new Book([
-            'judul' => $row['judul'],
-            'penulis' => $row['penulis'],
-            'isbn' => $row['isbn'],
-            'category_id' => Category::where('nama', $row['kategori'])->value('id'),
-            'penerbit' => $row['penerbit'],
-            'tahun_terbit' => $row['tahun_terbit'],
-            'stok' => $row['stok'],
+            'judul' => $judul,
+            'penulis' => $row['penulis'] ?? null,
+            'isbn' => $isbn,
+            'category_id' => $categoryId,
+            'penerbit' => $row['penerbit'] ?? null,
+            'tahun_terbit' => !empty($row['tahun_terbit']) ? (int) $row['tahun_terbit'] : null,
+            'stok' => isset($row['stok']) ? (int) $row['stok'] : 0,
             'deskripsi' => $row['deskripsi'] ?? null,
         ]);
     }
