@@ -1,4 +1,7 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+<nav x-data="{ open: false, darkMode: localStorage.getItem('theme') === 'dark' }" x-init="$watch('darkMode', val => {
+        localStorage.setItem('theme', val ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', val);
+    })" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -61,7 +64,24 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
+                <!-- Tombol Toggle Tema -->
+                <button id="theme-toggle" class="relative inline-flex h-9 w-9 items-center justify-center rounded-full
+               bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200
+               hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300 shadow-md">
+                    <!-- Icon Sun -->
+                    <svg id="icon-sun" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10 15a5 5 0 100-10 5 5 0 000 10zm0 2a7 7 0 110-14 7 7 0 010 14zm0-16a1 1 0 011 1v1a1 1 0 11-2 0V2a1 1 0 011-1zm0 18a1 1 0 011-1v-1a1 1 0 11-2 0v1a1 1 0 011 1zm8-9a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zm-16 0a1 1 0 011-1H2a1 1 0 110 2h1a1 1 0 01-1-1zm12.071 6.071a1 1 0 01-1.414 0L12 15.414a1 1 0 011.414-1.414l1.657 1.657a1 1 0 010 1.414zM6.343 6.343A1 1 0 014.93 4.93L6.586 3.272A1 1 0 118 4.686L6.343 6.343zm0 7.314a1 1 0 010 1.414L4.686 18a1 1 0 01-1.414-1.414l1.657-1.657a1 1 0 011.414 0zm9.9-9.9a1 1 0 010 1.414L15.414 8A1 1 0 0114 6.586l1.657-1.657a1 1 0 011.414 0z" />
+                    </svg>
+
+                    <!-- Icon Moon -->
+                    <svg id="icon-moon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 116.707 2.707a8.001 8.001 0 0010.586 10.586z" />
+                    </svg>
+                </button>
+
+                <!-- Dropdown User -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
@@ -138,4 +158,39 @@
             </div>
         </div>
     </div>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const iconSun = document.getElementById('icon-sun');
+        const iconMoon = document.getElementById('icon-moon');
+        const html = document.documentElement;
+
+        function updateIcon() {
+            if (html.classList.contains('dark')) {
+                iconMoon.classList.add('hidden');
+                iconSun.classList.remove('hidden');
+            } else {
+                iconSun.classList.add('hidden');
+                iconMoon.classList.remove('hidden');
+            }
+        }
+
+        // set tema awal
+        if (localStorage.theme === 'dark' ||
+            (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+        updateIcon();
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+            updateIcon();
+        });
+    </script>
 </nav>
