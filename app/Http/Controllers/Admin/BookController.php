@@ -16,10 +16,13 @@ class BookController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $books = Book::with('category')->get();
-        return view('admin.books.index', compact('books'));
-    }
+{
+    $books = Book::with('category')->get();
+    $categories = Category::all();
+
+    return view('admin.books.index', compact('books', 'categories'));
+}
+
 
     /**
      * Show the form for creating a new resource.
