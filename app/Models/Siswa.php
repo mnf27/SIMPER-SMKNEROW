@@ -13,13 +13,18 @@ class Siswa extends Model
 
     protected $fillable = [
         'user_id',
-        'nis',
-        'nama',
-        'kelas',
+        'nipd',
+        'nisn',
+        'id_rombel',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function rombel()
+    {
+        return $this->belongsTo(Rombel::class, 'id_rombel');
     }
 }

@@ -13,9 +13,9 @@ return new class extends Migration {
         Schema::create('siswa', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('nis')->unique();
-            $table->string('nama');
-            $table->string('kelas');
+            $table->string('nipd')->nullable()->unique();
+            $table->string('nisn')->nullable()->unique();
+            $table->foreignId('id_rombel')->constrained('rombel')->onDelete('cascade');
             $table->timestamps();
         });
     }

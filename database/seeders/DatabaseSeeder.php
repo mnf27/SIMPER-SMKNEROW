@@ -16,9 +16,12 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::create([
+            'nama' => 'Administrator',
+            'username' => 'admin',
             'email' => 'admin@smknrowo.sch.id',
             'password' => Hash::make('simperpus123'),
             'role' => 'admin',
+            'jenis_kelamin' => 'P',
         ]);
     }
 }

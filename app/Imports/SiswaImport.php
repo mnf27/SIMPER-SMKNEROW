@@ -2,32 +2,48 @@
 
 namespace App\Imports;
 
-use App\Models\Siswa;
 use App\Models\User;
+use App\Models\Siswa;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\ToCollection;
 
-class SiswaImport implements ToModel, WithHeadingRow
+class SiswaImport implements ToCollection
 {
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        $user = User::create([
-            'email' => $row['email'],
-            'password' => Hash::make('simperpus123'),
-            'role' => 'siswa',
-        ]);
+        // skip 6 baris header pertama
+        $rows = $rows->skip(6);
 
-        return new Siswa([
-            'user_id' => $user->id,
-            'nis' => $row['nis'],
-            'nama' => $row['nama'],
-            'kelas' => $row['kelas'],
-        ]);
+        foreach ($rows as $row) {
+            if (!$row[1])
+                continue;
+
+            $nama = trim($row[1]);
+            $jk = $row[3] == 'L' ? 'L' : 'P';
+            $nipd = $row[2];
+            $nisn = $row[4];
+            $tglLahir = \Carbon\Carbon::parse($row[7]);
+
+            // username = 3 huruf nama depan + ddmmyy
+            $prefix = strtolower(substr(str_replace(' ', '', $nama), 0, 3));
+            $username = $prefix . $tglLahir->format('dmy');
+
+            $user = User::create([
+                'nama' => $nama,
+                'username' => $username,
+                'email' => $username . '@smkrowo.sch.id',
+                'password' => Hash::make('1234556'),
+                'role' => 'siswa',
+                'jenis_kelamin' => $jk,
+            ]);
+
+            Siswa::create([
+                'user_id' => $user->id,
+                'nipd' => $nipd,
+                'nisn' => $nisn,
+                'id_rombel' => null, // nanti diisi manual
+            ]);
+        }
     }
 }

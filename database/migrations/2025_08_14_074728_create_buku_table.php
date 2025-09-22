@@ -10,17 +10,21 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('books', function (Blueprint $table) {
+        Schema::create('buku', function (Blueprint $table) {
             $table->id();
+            $table->string('no_induk')->unique();
             $table->string('judul');
             $table->string('penulis');
-            $table->string('isbn')->unique();
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('penerbit');
             $table->year('tahun_terbit');
-            $table->integer('stok')->default(0);
+            $table->string('cetakan_edisi')->nullable();
+            $table->string('klasifikasi')->nullable();
+            $table->foreignId('id_kategori')->constrained('kategori')->onDelete('cascade');
+            $table->integer('jumlah_eksemplar');
+            $table->string('asal')->nullable();
+            $table->decimal('harga', 12, 2)->nullable();
+            $table->text('keterangan')->nullable();
             $table->string('cover_image')->nullable();
-            $table->text('deskripsi')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +34,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('books');
+        Schema::dropIfExists('buku');
     }
 };

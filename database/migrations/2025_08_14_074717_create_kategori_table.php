@@ -10,12 +10,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('guru', function (Blueprint $table) {
+        Schema::create('kategori', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('nuptk')->nullable()->unique();
-            $table->string('nip')->nullable()->unique();
-            $table->string('status_kepegawaian');
+            $table->string('nama');
             $table->timestamps();
         });
     }
@@ -25,6 +22,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('guru');
+        Schema::dropIfExists('kategori');
     }
 };

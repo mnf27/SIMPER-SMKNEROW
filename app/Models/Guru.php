@@ -13,12 +13,13 @@ class Guru extends Model
 
     protected $fillable = [
         'user_id',
+        'nuptk',
         'nip',
-        'nama',
+        'status_kepegawaian',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

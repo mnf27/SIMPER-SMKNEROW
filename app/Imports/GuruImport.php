@@ -4,33 +4,46 @@ namespace App\Imports;
 
 use App\Models\User;
 use App\Models\Guru;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\ToCollection;
 
-class GuruImport implements ToModel, WithHeadingRow
+class GuruImport implements ToCollection
 {
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        $user = User::create(
-            [
-                'email' => $row['email'],
-                'password' => Hash::make('simperpus123'),
-                'role' => 'guru',
-            ]
-        );
+        // skip 6 baris header pertama
+        $rows = $rows->skip(6);
 
-        return new Guru(
-            [
-                'nip' => $row['nip'],
+        foreach ($rows as $row) {
+            if (!$row[1])
+                continue; // skip kosong
+
+            $nama = trim($row[1]);
+            $jk = $row[3] == 'L' ? 'L' : 'P';
+            $nuptk = $row[2];
+            $nip = $row[6];
+            $status = $row[7];
+            $tglLahir = \Carbon\Carbon::parse($row[5]);
+
+            // username = ddmmyy
+            $username = $tglLahir->format('dmy');
+
+            $user = User::create([
+                'nama' => $nama,
+                'username' => $username,
+                'email' => $username . '@smkrowo.sch.id',
+                'password' => Hash::make('1234556'),
+                'role' => 'guru',
+                'jenis_kelamin' => $jk,
+            ]);
+
+            Guru::create([
                 'user_id' => $user->id,
-                'nama' => $row['nama'],
-            ]
-        );
+                'nuptk' => $nuptk,
+                'nip' => $nip,
+                'status_kepegawaian' => $status,
+            ]);
+        }
     }
 }

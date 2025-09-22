@@ -8,35 +8,55 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
+                    @if(auth()->user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}">
+                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                        </a>
+                    @elseif(auth()->user()->role === 'guru')
+                        <a href="{{ route('guru.dashboard') }}">
+                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                        </a>
+                    @else
+                        <a href="{{ route('siswa.dashboard') }}">
+                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @if(auth()->user()->role === 'admin')
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                            Dashboard
+                        </x-nav-link>
+                    @elseif(auth()->user()->role === 'guru')
+                        <x-nav-link :href="route('guru.dashboard')" :active="request()->routeIs('guru.dashboard')">
+                            Dashboard
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('siswa.dashboard')" :active="request()->routeIs('siswa.dashboard')">
+                            Dashboard
+                        </x-nav-link>
+                    @endif
 
                     {{-- Menu khusus Admin --}}
                     @if(auth()->user()->role == 'admin')
-                        <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
+                        <x-nav-link :href="route('admin.import.index')" :active="request()->routeIs('admin.import.*')">
+                            Import User
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.rombels.index')" :active="request()->routeIs('admin.rombels.*')">
+                            Kelola Rombel
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
                             Kelola Kategori
                         </x-nav-link>
-                        <x-nav-link :href="route('books.index')" :active="request()->routeIs('books.*')">
+                        <x-nav-link :href="route('admin.books.index')" :active="request()->routeIs('admin.books.*')">
                             Kelola Buku
                         </x-nav-link>
-                        <x-nav-link :href="route('guru.index')" :active="request()->routeIs('guru.*')">
-                            Kelola Guru
-                        </x-nav-link>
-                        <x-nav-link :href="route('siswa.index')" :active="request()->routeIs('siswa.*')">
-                            Kelola Siswa
-                        </x-nav-link>
-                        <x-nav-link :href="route('loans.index')" :active="request()->routeIs('loans.*')">
+                        <x-nav-link :href="route('admin.loans.index')" :active="request()->routeIs('admin.loans.*')">
                             Peminjaman
                         </x-nav-link>
-                        <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
+                        <x-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
                             Laporan
                         </x-nav-link>
                     @endif
@@ -44,10 +64,10 @@
                     {{-- Menu Guru --}}
                     @if(auth()->user()->role == 'guru')
                         <x-nav-link :href="route('guru.books.index')" :active="request()->routeIs('books.*')">
-                            Buku
+                            Katalog Buku
                         </x-nav-link>
                         <x-nav-link :href="url('/history')" :active="request()->is('history')">
-                            History
+                            Peminjaman Saya
                         </x-nav-link>
                     @endif
 
@@ -132,9 +152,19 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            @if(auth()->user()->role === 'admin')
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                    Dashboard
+                </x-responsive-nav-link>
+            @elseif(auth()->user()->role === 'guru')
+                <x-responsive-nav-link :href="route('guru.dashboard')" :active="request()->routeIs('guru.dashboard')">
+                    Dashboard
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('siswa.dashboard')" :active="request()->routeIs('siswa.dashboard')">
+                    Dashboard
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
