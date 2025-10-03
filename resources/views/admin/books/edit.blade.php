@@ -23,7 +23,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('books.update', $book) }}" method="POST" enctype="multipart/form-data"
+            <form action="{{ route('admin.books.update', $book) }}" method="POST" enctype="multipart/form-data"
                 class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @csrf
                 @method('PUT')
@@ -122,7 +122,7 @@
 
                 {{-- Tombol --}}
                 <div class="col-span-2 flex justify-end space-x-3 pt-4">
-                    <a href="{{ route('books.index') }}"
+                    <a href="{{ route('admin.books.index') }}"
                         class="bg-gray-500 text-white px-5 py-2 rounded-lg shadow hover:bg-gray-600 transition">
                         Batal
                     </a>

@@ -27,6 +27,12 @@ class Buku extends Model
         'cover_image',
     ];
 
+    protected $casts = [
+        'harga' => 'integer',
+        'tahun_terbit' => 'integer',
+        'jumlah_eksemplar' => 'integer',
+    ];
+
     // Relasi ke kategori
     public function kategori()
     {
@@ -37,5 +43,12 @@ class Buku extends Model
     public function peminjaman()
     {
         return $this->hasMany(Peminjaman::class, 'id_buku');
+    }
+
+    public function getCoverImageUrlAttribute()
+    {
+        return $this->cover_image
+            ? asset('storage/covers/' . $this->cover_image)
+            : asset('images/default_cover.png');
     }
 }

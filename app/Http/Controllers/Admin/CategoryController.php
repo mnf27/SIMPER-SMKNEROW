@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Kategori::all();
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -31,15 +31,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255|unique:categories,nama',
-            'deskripsi' => 'nullable|string',
+            'nama' => 'required|string|max:255|unique:kategori,nama',
         ], [
             'nama.required' => 'Nama kategori wajib diisi.',
             'nama.unique' => 'Kategori sudah ada, silahkan masukkan kategori lain.',
             'nama.max' => 'Nama kategori maksimal 255 karakter.',
         ]);
 
-        Category::create($request->only('nama', 'deskripsi'));
+        Kategori::create($request->only('nama'));
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Kategori berhasil ditambahkan!');
@@ -56,7 +55,7 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Category $category)
+    public function edit(Kategori $category)
     {
         return view('admin.categories.edit', compact('category'));
     }
@@ -64,18 +63,17 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Kategori $category)
     {
         $request->validate([
-            'nama' => 'required|string|max:255|unique:categories,nama,' . $category->id,
-            'deskripsi' => 'nullable|string',
+            'nama' => 'required|string|max:255|unique:kategori,nama,' . $category->id,
         ], [
             'nama.required' => 'Nama kategori wajib diisi.',
             'nama.unique' => 'Kategori sudah ada, silahkan masukkan kategori lain.',
             'nama.max' => 'Nama kategori maksimal 255 karakter.',
         ]);
 
-        $category->update($request->only('nama', 'deskripsi'));
+        $category->update($request->only('nama'));
 
         return redirect()->route('admin.categories.index')
             ->with('succes', 'Kategori berhasil diperbarui!');
@@ -84,7 +82,7 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Kategori $category)
     {
         $category->delete();
         return redirect()->route('admin.categories.index')

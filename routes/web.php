@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('rombels', RombelController::class);
 
         Route::resource('categories', CategoryController::class);
+        
         Route::resource('books', BookController::class);
         Route::post('books/import', [BookController::class, 'import'])->name('books.import');
 

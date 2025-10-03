@@ -8,9 +8,7 @@
         </h2>
     </x-slot>
 
-    {{-- Wrapper Alpine --}}
-    <div class="py-8 max-w-7xl mx-auto" x-data="{ openTambah: false }">
-
+    <div class="py-8 max-w-7xl mx-auto" x-data="bookModal()">
         <div class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Notifikasi --}}
@@ -22,12 +20,14 @@
 
             {{-- Action Bar --}}
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <button @click="openTambah = true"
+                {{-- Tombol Tambah Buku --}}
+                <button @click="openCreate()"
                     class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition">
                     + Tambah Buku
                 </button>
 
-                <form action="{{ route('books.import') }}" method="POST" enctype="multipart/form-data"
+                {{-- Import Excel --}}
+                <form action="{{ route('admin.books.import') }}" method="POST" enctype="multipart/form-data"
                     class="flex items-center gap-2 bg-gray-50 p-2 rounded-lg shadow">
                     @csrf
                     <input type="file" name="file"
@@ -49,11 +49,11 @@
                             <th class="p-3">Judul</th>
                             <th class="p-3">Kategori</th>
                             <th class="p-3">Penulis</th>
-                            <th class="p-3">ISBN</th>
+                            <th class="p-3">No Induk</th>
                             <th class="p-3">Penerbit</th>
                             <th class="p-3">Tahun</th>
-                            <th class="p-3">Stok</th>
-                            <th class="p-3">Deskripsi</th>
+                            <th class="p-3">Jumlah Eksemplar</th>
+                            <th class="p-3">Keterangan</th>
                             <th class="p-3 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -70,21 +70,24 @@
                                     @endif
                                 </td>
                                 <td class="p-3 font-semibold">{{ $book->judul }}</td>
-                                <td class="p-3">{{ $book->category->nama ?? '-' }}</td>
+                                <td class="p-3">{{ $book->kategori->nama ?? '-' }}</td>
                                 <td class="p-3">{{ $book->penulis }}</td>
-                                <td class="p-3">{{ $book->isbn }}</td>
+                                <td class="p-3">{{ $book->no_induk }}</td>
                                 <td class="p-3">{{ $book->penerbit }}</td>
                                 <td class="p-3 text-center">{{ $book->tahun_terbit }}</td>
-                                <td class="p-3 text-center">{{ $book->stok }}</td>
-                                <td class="p-3 max-w-xs truncate" title="{{ $book->deskripsi }}">
-                                    {{ $book->deskripsi ?? '-' }}
+                                <td class="p-3 text-center">{{ $book->jumlah_eksemplar }}</td>
+                                <td class="p-3 max-w-xs truncate" title="{{ $book->keterangan }}">
+                                    {{ $book->keterangan ?? '-' }}
                                 </td>
                                 <td class="p-3 text-center flex justify-center gap-2">
-                                    <a href="{{ route('books.edit', $book) }}"
+                                    {{-- Tombol Edit --}}
+                                    <button @click="openEdit({{ $book->toJson() }})"
                                         class="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition">
                                         ✏️ Edit
-                                    </a>
-                                    <form action="{{ route('books.destroy', $book) }}" method="POST" class="inline-block"
+                                    </button>
+
+                                    {{-- Tombol Hapus --}}
+                                    <form action="{{ route('admin.books.destroy', $book) }}" method="POST"
                                         onsubmit="return confirm('Yakin hapus buku ini?')">
                                         @csrf
                                         @method('DELETE')
@@ -104,25 +107,29 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:px-6">
+                    <div class="rounded-lg shadow-sm">
+                        {{ $books->links() }}
+                    </div>
+                </div>
             </div>
         </div>
 
-        {{-- Modal Tambah Buku --}}
-        <div x-show="openTambah" x-cloak
+        {{-- Modal Tambah & Edit Buku --}}
+        <div x-show="openModal" x-cloak
             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" x-transition.opacity>
 
             <div class="bg-white w-full max-w-3xl rounded-2xl shadow-lg transform transition-all 
-                max-h-[90vh] flex flex-col" x-transition.scale>
+        max-h-[90vh] flex flex-col" x-transition.scale>
 
-                {{-- Header (sticky) --}}
-                <div class="flex justify-between items-center px-6 py-4 sticky top-0 ">
-                    <h2 class="text-lg font-bold">Tambah Buku</h2>
-                    <button @click="openTambah = false" class="text-gray-500 hover:text-gray-800">✖</button>
+                {{-- Header --}}
+                <div class="flex justify-between items-center px-6 py-4 sticky top-0">
+                    <h2 class="text-lg font-bold" x-text="mode === 'create' ? 'Tambah Buku' : 'Edit Buku'"></h2>
+                    <button @click="openModal = false" class="text-gray-500 hover:text-gray-800">✖</button>
                 </div>
 
-                {{-- Isi modal scrollable --}}
+                {{-- Body --}}
                 <div class="px-6 py-4 overflow-y-auto">
-                    {{-- Pesan error --}}
                     @if ($errors->any())
                         <div class="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-lg mb-6">
                             <h3 class="font-semibold mb-2">Terdapat kesalahan:</h3>
@@ -134,44 +141,44 @@
                         </div>
                     @endif
 
-                    {{-- Form --}}
-                    <form id="formTambahBuku" action="{{ route('books.store') }}" method="POST" enctype="multipart/form-data"
-                        class="space-y-6">
+                    <form id="formBuku" :action="mode === 'create'
+                    ? '{{ route('admin.books.store') }}'
+                    : '/admin/books/' + selectedBook.id" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
+                        <template x-if="mode === 'edit'">
+                            <input type="hidden" name="_method" value="PUT">
+                        </template>
 
-                        {{-- Grid 2 kolom untuk field kecil --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Judul --}}
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-semibold text-gray-800 mb-1">Judul</label>
-                                <input type="text" name="judul" value="{{ old('judul') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                               focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
+                                <input type="text" name="judul" x-model="selectedBook.judul" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
                             </div>
 
                             {{-- Penulis --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-800 mb-1">Penulis</label>
-                                <input type="text" name="penulis" value="{{ old('penulis') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                               focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
+                                <input type="text" name="penulis" x-model="selectedBook.penulis" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
                             </div>
 
-                            {{-- ISBN --}}
+                            {{-- No Induk --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-800 mb-1">ISBN</label>
-                                <input type="text" name="isbn" value="{{ old('isbn') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                               focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
+                                <label class="block text-sm font-semibold text-gray-800 mb-1">No Induk</label>
+                                <input type="text" name="no_induk" x-model="selectedBook.no_induk" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
                             </div>
 
                             {{-- Kategori --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-800 mb-1">Kategori</label>
-                                <select name="category_id" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                                focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
+                                <select name="id_kategori" x-model="selectedBook.id_kategori" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                            {{ $category->nama }}
-                                        </option>
+                                        <option value="{{ $category->id }}">{{ $category->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -179,67 +186,69 @@
                             {{-- Penerbit --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-800 mb-1">Penerbit</label>
-                                <input type="text" name="penerbit" value="{{ old('penerbit') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                               focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
+                                <input type="text" name="penerbit" x-model="selectedBook.penerbit" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
                             </div>
 
                             {{-- Tahun Terbit --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-800 mb-1">Tahun Terbit</label>
-                                <input type="text" name="tahun_terbit" value="{{ old('tahun_terbit') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                               focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" pattern="\d{4}"
-                                    maxlength="4" placeholder="contoh: 2020" required>
-                                @error('tahun_terbit')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                @enderror
+                                <input type="text" name="tahun_terbit" x-model="selectedBook.tahun_terbit" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" pattern="\d{4}" maxlength="4"
+                                    placeholder="contoh: 2020" required>
                             </div>
 
-                            {{-- Stok --}}
+                            {{-- Jumlah Eksemplar --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-800 mb-1">Stok</label>
-                                <input type="number" name="stok" value="{{ old('stok') }}" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                               focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5" required>
+                                <label class="block text-sm font-semibold text-gray-800 mb-1">Jumlah Eksemplar</label>
+                                <input type="number" name="jumlah_eksemplar" x-model="selectedBook.jumlah_eksemplar"
+                                    class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
                             </div>
                         </div>
 
                         {{-- Cover --}}
                         <div>
                             <label class="block text-sm font-semibold text-gray-800 mb-1">Cover (Opsional)</label>
-                            <div id="previewWrapper" class="mt-3 hidden text-center">
-                                <img id="preview" src="#" alt="Preview Cover"
+
+                            {{-- Hidden input untuk flag hapus cover --}}
+                            <input type="hidden" name="remove_cover" x-model="selectedBook.remove_cover">
+
+                            <div class="mt-3 text-center" x-show="selectedBook.cover_url || preview">
+                                <img :src="preview || selectedBook.cover_url" alt="Preview Cover"
                                     class="max-h-48 rounded-xl border-2 border-dashed p-2 mb-3 mx-auto shadow-sm bg-gray-50">
+
                                 <div>
-                                    <button type="button" onclick="clearImage()"
+                                    <button type="button"
+                                        @click="preview = null; selectedBook.cover_url = null; selectedBook.remove_cover = 1; $refs.coverInput.value = null;"
                                         class="bg-red-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-red-600 transition">
                                         Hapus Gambar
                                     </button>
                                 </div>
                             </div>
-                            <input type="file" name="cover_image" id="cover_image" accept="image/*" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                           focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5 mt-2"
-                                onchange="previewImage(event)">
+
+                            <input type="file" x-ref="coverInput" name="cover_image" accept="image/*" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+               focus:ring-2 focus:ring-blue-400 px-4 py-2.5 mt-2" @change="previewImage($event)">
                         </div>
 
-                        {{-- Deskripsi --}}
+                        {{-- Keterangan --}}
                         <div>
-                            <label class="block text-sm font-semibold text-gray-800 mb-1">Deskripsi</label>
-                            <textarea name="deskripsi" rows="4"
-                                class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                              focus:ring-2 focus:ring-blue-400 focus:border-blue-400 px-4 py-2.5">{{ old('deskripsi') }}</textarea>
+                            <label class="block text-sm font-semibold text-gray-800 mb-1">Keterangan</label>
+                            <textarea name="keterangan" rows="4" x-model="selectedBook.keterangan" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                        focus:ring-2 focus:ring-blue-400 px-4 py-2.5"></textarea>
                         </div>
                     </form>
                 </div>
 
-                {{-- Footer (sticky di bawah) --}}
+                {{-- Footer --}}
                 <div class="flex justify-end gap-3 px-6 py-4 sticky bottom-0 z-10">
-                    <button type="button" @click="openTambah = false"
+                    <button type="button" @click="openModal = false"
                         class="px-5 py-2.5 rounded-xl bg-gray-400 text-white shadow hover:bg-gray-500 transition">
                         Batal
                     </button>
-                    <button type="submit" form="formTambahBuku"
-                        class="px-5 py-2.5 rounded-xl bg-blue-500 text-white shadow hover:bg-blue-600 transition">
-                        Simpan
-                    </button>
+                    <button type="submit" form="formBuku"
+                        class="px-5 py-2.5 rounded-xl bg-blue-500 text-white shadow hover:bg-blue-600 transition"
+                        x-text="mode === 'create' ? 'Simpan' : 'Update'"></button>
                 </div>
             </div>
         </div>
@@ -248,30 +257,44 @@
 
 {{-- Script preview cover --}}
 <script>
-    function previewImage(event) {
-        const input = event.target;
-        const preview = document.getElementById('preview');
-        const wrapper = document.getElementById('previewWrapper');
+    function bookModal() {
+        return {
+            openModal: false,
+            mode: 'create',
+            selectedBook: {},
+            preview: null,
 
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                wrapper.classList.remove('hidden');
+            openCreate() {
+                this.mode = 'create';
+                this.selectedBook = { remove_cover: 0 }; // default jangan hapus
+                this.preview = null;
+                this.openModal = true;
+            },
+
+            openEdit(book) {
+                this.mode = 'edit';
+                this.selectedBook = {
+                    ...book,
+                    remove_cover: 0, // default jangan hapus
+                    cover_url: book.cover_image
+                        ? "{{ asset('storage') }}/" + book.cover_image
+                        : null
+                };
+                this.preview = null;
+                this.openModal = true;
+            },
+
+            previewImage(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    this.selectedBook.remove_cover = 0; // kalau upload cover baru, jangan hapus
+                    const reader = new FileReader();
+                    reader.onload = e => { this.preview = e.target.result }
+                    reader.readAsDataURL(file);
+                } else {
+                    this.preview = null;
+                }
             }
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            clearImage();
         }
-    }
-
-    function clearImage() {
-        const input = document.getElementById('cover_image');
-        const preview = document.getElementById('preview');
-        const wrapper = document.getElementById('previewWrapper');
-
-        input.value = "";
-        preview.src = "#";
-        wrapper.classList.add('hidden');
     }
 </script>
