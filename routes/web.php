@@ -42,13 +42,13 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('rombels', RombelController::class);
 
         Route::resource('categories', CategoryController::class);
-        
+
         Route::resource('books', BookController::class);
         Route::post('books/import', [BookController::class, 'import'])->name('books.import');
 
-        Route::resource('loans', LoanController::class)->only(['index']);
-        Route::get('/loans/export/excel', [LoanController::class, 'exportExcel'])->name('loan.export.excel');
-        Route::get('/loans/table', [LoanController::class, 'table'])->name('admin.loans.table');
+        Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
+        Route::post('/loans/store', [LoanController::class, 'store'])->name('loans.store');
+        Route::post('/loans/{loan}/return', [LoanController::class, 'returnBook'])->name('loans.return');
 
         Route::resource('reports', ReportController::class)->only(['index']);
         Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');

@@ -22,9 +22,9 @@ class Peminjaman extends Model
     ];
 
     protected $casts = [
-        'tanggal_pinjam' => 'date',
-        'tanggal_kembali' => 'date',
-        'tanggal_dikembalikan' => 'date',
+        'tanggal_pinjam' => 'datetime',
+        'tanggal_kembali' => 'datetime',
+        'tanggal_dikembalikan' => 'datetime',
     ];
 
     // Relasi ke User
