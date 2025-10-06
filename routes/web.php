@@ -50,8 +50,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/loans/store', [LoanController::class, 'store'])->name('loans.store');
         Route::post('/loans/{loan}/return', [LoanController::class, 'returnBook'])->name('loans.return');
 
-        Route::resource('reports', ReportController::class)->only(['index']);
-        Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     });
 
     // =====================
