@@ -45,6 +45,15 @@ class Buku extends Model
         return $this->hasMany(Peminjaman::class, 'id_buku');
     }
 
+    public function getStokAttribute()
+    {
+        $dipinjam = $this->peminjaman()
+            ->whereIn('status', ['aktif', 'terlambat'])
+            ->sum('jumlah');
+
+        return max($this->jumlah_eksemplar - $dipinjam, 0);
+    }
+
     public function getCoverImageUrlAttribute()
     {
         return $this->cover_image

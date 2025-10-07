@@ -33,7 +33,7 @@ class GuruImport implements ToCollection
                 'nama' => $nama,
                 'username' => $username,
                 'email' => $username . '@smkrowo.sch.id',
-                'password' => Hash::make('1234556'),
+                'password' => Hash::make('123456'),
                 'role' => 'guru',
                 'jenis_kelamin' => $jk,
             ]);

@@ -3,31 +3,61 @@
 namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
-use App\Models\Loan;
-use App\Models\Book;
+use App\Models\Peminjaman;
+use App\Models\Buku;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class LoanController extends Controller
 {
-    public function store($id)
+    public function store(Request $request)
     {
-        $books = Book::findOrFail($id);
+        $judul = $request->judul; // kirimkan judul dari tombol "Pinjam" di view
 
-        if ($books->stok < 1) {
-            return redirect()->back()->with('error', 'Stok buku habis!');
+        // Cari salah satu buku dengan judul yang sama dan stok masih ada
+        $buku = Buku::where('judul', $judul)
+            ->where('jumlah_eksemplar', '>', 0)
+            ->first();
+
+        if (!$buku) {
+            return back()->with('error', 'Stok buku "' . $judul . '" habis.');
         }
 
-        $loans = new Loan();
-        $loans->user_id = Auth::id();
-        $loans->book_id = $id;
-        $loans->tanggal_peminjaman = Carbon::now();
-        $loans->tanggal_jatuh_tempo = Carbon::now()->addDays(7);
-        $loans->status = 'aktif';
-        $loans->save();
+        // Cek apakah user masih meminjam buku ini
+        $sudahPinjam = Peminjaman::where('id_user', Auth::id())
+            ->where('id_buku', $buku->id)
+            ->where('status', 'aktif')
+            ->exists();
 
-        $books->decrement('stok');
+        if ($sudahPinjam) {
+            return back()->with('error', 'Anda masih meminjam buku "' . $judul . '".');
+        }
 
-        return redirect()->back()->with('success', 'Buku berhasil dipinjam!');
+        // Simpan data peminjaman
+        Peminjaman::create([
+            'id_user' => Auth::id(),
+            'id_buku' => $buku->id,
+            'tanggal_pinjam' => Carbon::now(),
+            'tanggal_kembali' => Carbon::now()->addDays(7),
+            'status' => 'aktif',
+            'jumlah' => 1,
+        ]);
+
+        // Kurangi stok buku
+        $buku->decrement('jumlah_eksemplar');
+
+        return back()->with('success', 'Buku "' . $judul . '" berhasil dipinjam.');
+    }
+
+    // Menampilkan riwayat peminjaman guru
+    public function history()
+    {
+        $peminjaman = Peminjaman::with('buku.kategori')
+            ->where('id_user', Auth::id())
+            ->orderBy('tanggal_pinjam', 'desc')
+            ->get();
+
+        return view('guru.loans.history', compact('peminjaman'));
     }
 }

@@ -63,7 +63,7 @@ class SiswaImport implements ToCollection
                 'nama' => $nama,
                 'username' => $username,
                 'email' => $username . '@smkrowo.sch.id',
-                'password' => Hash::make('1234556'),
+                'password' => Hash::make('123456'),
                 'role' => 'siswa',
                 'jenis_kelamin' => $jk,
             ]);

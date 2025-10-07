@@ -59,8 +59,8 @@ Route::middleware(['auth'])->group(function () {
     // =====================
     Route::middleware('role:guru')->group(function () {
         Route::get('/guru/books', [\App\Http\Controllers\Guru\BookController::class, 'index'])->name('guru.books.index');
-        Route::post('/guru/books{id}/pinjam', [\App\Http\Controllers\Guru\LoanController::class, 'store'])->name('guru.books.pinjam');
-        Route::get('/guru/history', [\App\Http\Controllers\Guru\LoanController::class, 'history'])->name('guru.history');
+        Route::post('/guru/books/pinjam', [\App\Http\Controllers\Guru\LoanController::class, 'store'])->name('guru.books.pinjam');
+        Route::get('/guru/history', [\App\Http\Controllers\Guru\LoanController::class, 'history'])->name('guru.loans.history');
     });
 
     // =====================

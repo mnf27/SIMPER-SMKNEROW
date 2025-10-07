@@ -63,10 +63,10 @@
 
                     {{-- Menu Guru --}}
                     @if(auth()->user()->role == 'guru')
-                        <x-nav-link :href="route('guru.books.index')" :active="request()->routeIs('books.*')">
-                            Katalog Buku
+                        <x-nav-link :href="route('guru.books.index')" :active="request()->routeIs('guru.books.*')">
+                            Daftar Buku
                         </x-nav-link>
-                        <x-nav-link :href="url('/history')" :active="request()->is('history')">
+                        <x-nav-link :href="route('guru.loans.history')" :active="request()->routeIs('guru.loans.*')">
                             Peminjaman Saya
                         </x-nav-link>
                     @endif
