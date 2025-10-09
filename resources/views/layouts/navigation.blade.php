@@ -47,7 +47,8 @@
                         <x-nav-link :href="route('admin.rombels.index')" :active="request()->routeIs('admin.rombels.*')">
                             Kelola Rombel
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
+                        <x-nav-link :href="route('admin.categories.index')"
+                            :active="request()->routeIs('admin.categories.*')">
                             Kelola Kategori
                         </x-nav-link>
                         <x-nav-link :href="route('admin.books.index')" :active="request()->routeIs('admin.books.*')">
@@ -73,11 +74,11 @@
 
                     {{-- Menu Siswa --}}
                     @if(auth()->user()->role == 'siswa')
-                        <x-nav-link :href="url('/pinjam')" :active="request()->is('pinjam')">
-                            Pinjam Buku
+                        <x-nav-link :href="route('siswa.books.index')" :active="request()->routeIs('siswa.books.*')">
+                            Daftar Buku
                         </x-nav-link>
-                        <x-nav-link :href="url('/history')" :active="request()->is('history')">
-                            History
+                        <x-nav-link :href="route('siswa.loans.history')" :active="request()->routeIs('siswa.loans.*')">
+                            Peminjaman Saya
                         </x-nav-link>
                     @endif
                 </div>

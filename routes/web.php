@@ -67,10 +67,9 @@ Route::middleware(['auth'])->group(function () {
     // ROUTE SISWA
     // =====================
     Route::middleware('role:siswa')->group(function () {
-        // contoh jika nanti diaktifkan
-        // Route::get('/siswa/pinjam', [\App\Http\Controllers\Siswa\LoanController::class, 'create'])->name('siswa.pinjam');
-        // Route::post('/siswa/pinjam', [\App\Http\Controllers\Siswa\LoanController::class, 'store'])->name('siswa.pinjam.store');
-        // Route::get('/siswa/history', [\App\Http\Controllers\Siswa\LoanController::class, 'history'])->name('siswa.history');
+        Route::get('/siswa/books', [\App\Http\Controllers\Siswa\BookController::class, 'index'])->name('siswa.books.index');
+    Route::post('/siswa/books/pinjam', [\App\Http\Controllers\Siswa\LoanController::class, 'store'])->name('siswa.books.pinjam');
+    Route::get('/siswa/history', [\App\Http\Controllers\Siswa\LoanController::class, 'history'])->name('siswa.loans.history');
     });
 });
 
