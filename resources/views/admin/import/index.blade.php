@@ -55,6 +55,12 @@
                             @endforelse
                         </tbody>
                     </table>
+                    <div
+                        class="px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:px-6">
+                        <div class="rounded-lg shadow-sm">
+                            {{ $guru->links() }}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -105,6 +111,12 @@
                             @endforelse
                         </tbody>
                     </table>
+                    <div
+                        class="px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:px-6">
+                        <div class="rounded-lg shadow-sm">
+                            {{ $siswa->links() }}
+                        </div>
+                    </div>
                 </div>
             </div>
 
