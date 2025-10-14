@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('rombel', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->enum('tingkat', [10, 11, 12]);
+            $table->string('tingkat', 5);
             $table->string('jurusan');
             $table->timestamps();
         });

@@ -12,32 +12,24 @@ class Buku extends Model
     protected $table = 'buku';
 
     protected $fillable = [
-        'no_induk',
         'judul',
         'penulis',
         'penerbit',
         'tahun_terbit',
         'cetakan_edisi',
         'klasifikasi',
-        'id_kategori',
-        'jumlah_eksemplar',
+        'no_class',
         'asal',
         'harga',
+        'jumlah_eksemplar',
         'keterangan',
         'cover_image',
     ];
 
     protected $casts = [
-        'harga' => 'integer',
+        'harga' => 'decimal:2',
         'tahun_terbit' => 'integer',
-        'jumlah_eksemplar' => 'integer',
     ];
-
-    // Relasi ke kategori
-    public function kategori()
-    {
-        return $this->belongsTo(Kategori::class, 'id_kategori');
-    }
 
     // Relasi ke peminjaman
     public function peminjaman()
@@ -45,15 +37,11 @@ class Buku extends Model
         return $this->hasMany(Peminjaman::class, 'id_buku');
     }
 
-    public function getStokAttribute()
+    public function eksemplar()
     {
-        $dipinjam = $this->peminjaman()
-            ->whereIn('status', ['aktif', 'terlambat'])
-            ->sum('jumlah');
-
-        return max($this->jumlah_eksemplar - $dipinjam, 0);
+        return $this->hasMany(Eksemplar::class, 'buku_id');
     }
-
+    
     public function getCoverImageUrlAttribute()
     {
         return $this->cover_image

@@ -18,7 +18,7 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Peminjaman::with(['user', 'buku.kategori', 'user.siswa.rombel'])
+        $query = Peminjaman::with(['user', 'user.siswa.rombel'])
             ->orderBy('tanggal_pinjam', 'desc');
 
         // filter tanggal
@@ -38,13 +38,6 @@ class ReportController extends Controller
         if ($request->filled('rombel_id')) {
             $query->whereHas('user.siswa', function ($q) use ($request) {
                 $q->where('id_rombel', $request->rombel_id);
-            });
-        }
-
-        // filter kategori
-        if ($request->filled('category_id')) {
-            $query->whereHas('buku', function ($q) use ($request) {
-                $q->where('id_kategori', $request->category_id);
             });
         }
 
@@ -72,21 +65,6 @@ class ReportController extends Controller
             $jumlahData[] = $peminjamanPerBulan[$i] ?? 0;
         }
 
-        // Chart pie
-        $kategoriData = Peminjaman::select('buku.id_kategori', DB::raw('COUNT(*) as total'))
-            ->join('buku', 'peminjaman.id_buku', '=', 'buku.id')
-            ->groupBy('buku.id_kategori')
-            ->pluck('total', 'buku.id_kategori')
-            ->toArray();
-
-        $kategoriLabels = [];
-        $kategoriJumlah = [];
-        foreach ($kategoriData as $idKategori => $total) {
-            $kategori = Kategori::find($idKategori);
-            $kategoriLabels[] = $kategori->nama ?? 'Lainnya';
-            $kategoriJumlah[] = $total;
-        }
-
         // ===== Grafik Buku Terpopuler =====
         $topBooks = Peminjaman::select('buku.id', 'buku.judul', DB::raw('COUNT(*) as total'))
             ->join('buku', 'peminjaman.id_buku', '=', 'buku.id')
@@ -100,19 +78,15 @@ class ReportController extends Controller
 
         $users = User::select('id', 'nama')->get();
         $rombels = Rombel::select('id', 'nama')->get();
-        $categories = Kategori::select('id', 'nama')->get();
         $bukus = Buku::select('id', 'judul')->get();
 
         return view('admin.reports.index', compact(
             'peminjaman',
             'users',
             'rombels',
-            'categories',
             'bukus',
             'bulanLabels',
             'jumlahData',
-            'kategoriLabels',
-            'kategoriJumlah',
             'topBookLabels',
             'topBookCounts'
         ));

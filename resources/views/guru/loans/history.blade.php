@@ -14,7 +14,6 @@
                         <tr class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
                             <th class="p-3">#</th>
                             <th class="p-3">Judul Buku</th>
-                            <th class="p-3">Kategori</th>
                             <th class="p-3">Tgl Pinjam</th>
                             <th class="p-3">Tgl Tempo</th>
                             <th class="p-3">Tgl Kembali</th>
@@ -27,15 +26,13 @@
                                                 class="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900">
                                                 <td class="p-3 text-center">{{ $index + 1 }}</td>
                                                 <td class="p-3">{{ $item->buku->judul ?? '-' }}</td>
-                                                <td class="p-3">{{ $item->buku->kategori->nama ?? '-' }}</td>
                                                 <td class="p-3">{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d/m/Y') }}</td>
                                                 <td class="p-3">{{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d/m/Y') }}</td>
                                                 <td class="p-3">
                                                     {{ $item->tanggal_dikembalikan ? \Carbon\Carbon::parse($item->tanggal_dikembalikan)->format('d/m/Y') : '-' }}
                                                 </td>
                                                 <td class="p-3">
-                                                    <span class="px-2 py-1 rounded-lg text-xs
-                                                                                                                        {{ $item->status == 'dipinjam' ? 'bg-yellow-100 text-yellow-700' :
+                                                    <span class="px-2 py-1 rounded-lg text-xs {{ $item->status == 'aktif' ? 'bg-yellow-100 text-yellow-700' :
                             ($item->status == 'dikembalikan' ? 'bg-green-100 text-green-700' :
                                 'bg-red-100 text-red-700') }}">
                                                         {{ ucfirst($item->status) }}

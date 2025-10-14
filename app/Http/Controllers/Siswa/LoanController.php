@@ -52,8 +52,7 @@ class LoanController extends Controller
 
     public function history()
     {
-        $peminjaman = Peminjaman::with('buku.kategori')
-            ->where('id_user', Auth::id())
+        $peminjaman = Peminjaman::where('id_user', Auth::id())
             ->orderBy('tanggal_pinjam', 'desc')
             ->get();
 

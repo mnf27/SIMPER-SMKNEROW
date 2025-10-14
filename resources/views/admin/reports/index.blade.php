@@ -87,7 +87,6 @@
                             <th class="p-3">Role</th>
                             <th class="p-3">Rombel</th>
                             <th class="p-3">Judul Buku</th>
-                            <th class="p-3">Kategori</th>
                             <th class="p-3 text-center">Tgl Pinjam</th>
                             <th class="p-3 text-center">Tgl Kembali</th>
                             <th class="p-3 text-center">Status</th>
@@ -102,7 +101,6 @@
                                 <td class="p-3">{{ ucfirst($item->user->role ?? '-') }}</td>
                                 <td class="p-3">{{ $item->user->siswa->rombel->nama ?? '-' }}</td>
                                 <td class="p-3">{{ $item->buku->judul ?? '-' }}</td>
-                                <td class="p-3">{{ $item->buku->kategori->nama ?? '-' }}</td>
                                 <td class="p-3 text-center">
                                     {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d/m/Y') }}
                                 </td>
@@ -133,17 +131,6 @@
                         <canvas id="peminjamanChart"></canvas>
                     </div>
                 </div>
-
-                {{-- Grafik Pie: Distribusi Kategori --}}
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 col-span-1 flex flex-col items-center">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                        🥧 Distribusi Peminjaman per Kategori
-                    </h3>
-                    <div class="w-64 h-64"> {{-- ukuran pie secukupnya --}}
-                        <canvas id="kategoriChart"></canvas>
-                    </div>
-                </div>
-            </div>
 
             {{-- Grafik Buku Terpopuler --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mt-6">
@@ -181,35 +168,6 @@
                 },
                 plugins: {
                     legend: { display: false }
-                }
-            }
-        });
-
-        // Grafik Pie per Kategori
-        const ctx2 = document.getElementById('kategoriChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'pie',
-            data: {
-                labels: @json($kategoriLabels),
-                datasets: [{
-                    data: @json($kategoriJumlah),
-                    backgroundColor: [
-                        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-                        '#14B8A6', '#F97316', '#6366F1', '#84CC16', '#E11D48'
-                    ]
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#374151',
-                            font: { size: 12, weight: '400' }
-                        }
-                    }
                 }
             }
         });

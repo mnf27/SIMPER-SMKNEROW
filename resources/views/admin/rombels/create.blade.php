@@ -43,11 +43,15 @@
                     </div>
 
                     {{-- Tombol Simpan --}}
-                    <div class="flex justify-end">
+                    <div class="flex gap-2">
                         <button type="submit"
                             class="inline-flex items-center px-5 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition">
                             💾 Simpan
                         </button>
+                        <a href="{{ route('admin.rombels.index') }}"
+                            class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg shadow">
+                            Batal
+                        </a>
                     </div>
                 </form>
             </div>

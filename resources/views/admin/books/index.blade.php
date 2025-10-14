@@ -12,7 +12,7 @@
         <div class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Notifikasi --}}
-            @if(session('success'))
+            @if (session('success'))
                 <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg mb-5 shadow">
                     ✅ {{ session('success') }}
                 </div>
@@ -20,11 +20,11 @@
 
             {{-- Action Bar --}}
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                {{-- Tombol Tambah Buku --}}
+                <!-- {{-- Tombol Tambah Buku --}}
                 <button @click="openCreate()"
                     class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition">
                     + Tambah Buku
-                </button>
+                </button> -->
 
                 {{-- Import Excel --}}
                 <form action="{{ route('admin.books.import') }}" method="POST" enctype="multipart/form-data"
@@ -44,16 +44,14 @@
                 <table class="w-full border-collapse text-sm">
                     <thead>
                         <tr class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                            <th class="p-3 text-center">#</th>
-                            <th class="p-3">Cover</th>
+                            <th class="p-3 text-center">No</th>
+                            <!-- <th class="p-3">Cover</th> -->
                             <th class="p-3">Judul</th>
-                            <th class="p-3">Kategori</th>
                             <th class="p-3">Penulis</th>
-                            <th class="p-3">No Induk</th>
                             <th class="p-3">Penerbit</th>
-                            <th class="p-3">Tahun</th>
-                            <th class="p-3">Jumlah Eksemplar</th>
-                            <th class="p-3">Keterangan</th>
+                            <th class="p-3 text-center">Tahun</th>
+                            <th class="p-3 text-center">Jumlah Eksemplar</th>
+                            <!-- <th class="p-3">Keterangan</th> -->
                             <th class="p-3 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -61,29 +59,33 @@
                         @forelse($books as $book)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                                 <td class="p-3 text-center">{{ $loop->iteration }}</td>
-                                <td class="p-3 text-center">
+                                <!-- <td class="p-3 text-center">
                                     @if ($book->cover_image)
                                         <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover {{ $book->judul }}"
                                             class="h-16 w-auto mx-auto rounded shadow">
                                     @else
                                         <span class="text-gray-400">-</span>
                                     @endif
-                                </td>
+                                </td> -->
                                 <td class="p-3 font-semibold">{{ $book->judul }}</td>
-                                <td class="p-3">{{ $book->kategori->nama ?? '-' }}</td>
                                 <td class="p-3">{{ $book->penulis }}</td>
-                                <td class="p-3">{{ $book->no_induk }}</td>
                                 <td class="p-3">{{ $book->penerbit }}</td>
                                 <td class="p-3 text-center">{{ $book->tahun_terbit }}</td>
-                                <td class="p-3 text-center">{{ $book->jumlah_eksemplar }}</td>
-                                <td class="p-3 max-w-xs truncate" title="{{ $book->keterangan }}">
-                                    {{ $book->keterangan ?? '-' }}
+                                <td class="p-3 text-center font-semibold">{{ $book->jumlah_eksemplar }}</td>
+                                <!-- <td class="p-3 max-w-xs truncate" title="{{ $book->keterangan }}"> -->
+                                {{ $book->keterangan ?? '-' }}
                                 </td>
                                 <td class="p-3 text-center flex justify-center gap-2">
+                                    {{-- Tombol Detail --}}
+                                    <button @click="openDetail({{ $book->id }})"
+                                        class="bg-blue-500 text-white px-3 py-1 rounded-lg shadow hover:bg-blue-600 transition">
+                                        Detail
+                                    </button>
+
                                     {{-- Tombol Edit --}}
                                     <button @click="openEdit({{ $book->toJson() }})"
                                         class="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition">
-                                        ✏️ Edit
+                                        Edit
                                     </button>
 
                                     {{-- Tombol Hapus --}}
@@ -93,14 +95,14 @@
                                         @method('DELETE')
                                         <button type="submit"
                                             class="bg-red-600 text-white px-3 py-1 rounded-lg shadow hover:bg-red-700 transition">
-                                            🗑️ Hapus
+                                            Hapus
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="p-4 text-center text-gray-500">
+                                <td colspan="10" class="p-4 text-center text-gray-500">
                                     Belum ada buku 📚
                                 </td>
                             </tr>
@@ -112,6 +114,60 @@
                         {{ $books->links() }}
                     </div>
                 </div>
+            </div>
+        </div>
+
+        {{-- Modal Detail Buku --}}
+        <div x-show="openDetailModal" x-cloak
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" x-transition.opacity>
+
+            <div
+                class="bg-white w-full max-w-2xl rounded-2xl shadow-lg transform transition-all max-h-[90vh] overflow-y-auto p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold">📖 Detail Buku</h2>
+                    <button @click="openDetailModal = false" class="text-gray-500 hover:text-gray-800">✖</button>
+                </div>
+
+                <template x-if="selectedDetail">
+                    <div>
+                        <div class="flex gap-4 mb-4">
+                            <img :src="selectedDetail.cover_image ? '{{ asset('storage') }}/' + selectedDetail.cover_image :
+                                '{{ asset('images/default_cover.png') }}'" alt="Cover Buku"
+                                class="w-32 h-44 object-cover rounded border">
+                            <div>
+                                <h3 class="text-xl font-semibold" x-text="selectedDetail.judul"></h3>
+                                <p>Penulis: <span x-text="selectedDetail.penulis"></span></p>
+                                <p>Penerbit: <span x-text="selectedDetail.penerbit"></span></p>
+                                <p>Tahun: <span x-text="selectedDetail.tahun_terbit"></span></p>
+                                <p>Keterangan: <span x-text="selectedDetail.keterangan || '-'"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <h4 class="font-semibold mb-2">📦 Daftar Eksemplar:</h4>
+
+                        <template x-if="selectedDetail.eksemplar.length">
+                            <table class="w-full border border-gray-300 text-sm">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="p-2 border">No Induk</th>
+                                        <th class="p-2 border">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="e in selectedDetail.eksemplar" :key="e.id">
+                                        <tr>
+                                            <td class="p-2 border" x-text="e.no_induk"></td>
+                                            <td class="p-2 border capitalize" x-text="e.status"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                        <template x-if="!selectedDetail.eksemplar.length">
+                            <p class="text-gray-500 text-center py-6">Memuat data buku...</p>
+                        </template>
+                    </div>
+                </template>
             </div>
         </div>
 
@@ -142,8 +198,10 @@
                     @endif
 
                     <form id="formBuku" :action="mode === 'create'
-                    ? '{{ route('admin.books.store') }}'
-                    : '/admin/books/' + selectedBook.id" method="POST" enctype="multipart/form-data" class="space-y-6">
+                            ?
+                            '{{ route('admin.books.store') }}' :
+                            '/admin/books/' + selectedBook.id" method="POST" enctype="multipart/form-data"
+                        class="space-y-6">
                         @csrf
                         <template x-if="mode === 'edit'">
                             <input type="hidden" name="_method" value="PUT">
@@ -164,25 +222,6 @@
                             focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
                             </div>
 
-                            {{-- No Induk --}}
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-800 mb-1">No Induk</label>
-                                <input type="text" name="no_induk" x-model="selectedBook.no_induk" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
-                            </div>
-
-                            {{-- Kategori --}}
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-800 mb-1">Kategori</label>
-                                <select name="id_kategori" x-model="selectedBook.id_kategori" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
-                                    <option value="">-- Pilih Kategori --</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->nama }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
                             {{-- Penerbit --}}
                             <div>
                                 <label class="block text-sm font-semibold text-gray-800 mb-1">Penerbit</label>
@@ -198,12 +237,14 @@
                                     placeholder="contoh: 2020" required>
                             </div>
 
-                            {{-- Jumlah Eksemplar --}}
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-800 mb-1">Jumlah Eksemplar</label>
-                                <input type="number" name="jumlah_eksemplar" x-model="selectedBook.jumlah_eksemplar"
-                                    class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
-                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
+                            {{-- Tambah Eksemplar --}}
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-gray-800 mb-1">Eksemplar Buku</label>
+                                <p class="text-sm text-gray-500 mb-2">Gunakan halaman detail buku untuk menambah atau
+                                    mengelola nomor induk eksemplar.</p>
+                                <div class="bg-gray-50 border rounded-xl px-4 py-2 text-gray-700">
+                                    Jumlah Eksemplar: <strong x-text="selectedBook.jumlah_eksemplar ?? 0"></strong>
+                                </div>
                             </div>
                         </div>
 
@@ -260,13 +301,17 @@
     function bookModal() {
         return {
             openModal: false,
+            openDetailModal: false,
             mode: 'create',
             selectedBook: {},
+            selectedDetail: null,
             preview: null,
 
             openCreate() {
                 this.mode = 'create';
-                this.selectedBook = { remove_cover: 0 }; // default jangan hapus
+                this.selectedBook = {
+                    remove_cover: 0
+                }; // default jangan hapus
                 this.preview = null;
                 this.openModal = true;
             },
@@ -276,12 +321,29 @@
                 this.selectedBook = {
                     ...book,
                     remove_cover: 0, // default jangan hapus
-                    cover_url: book.cover_image
-                        ? "{{ asset('storage') }}/" + book.cover_image
-                        : null
+                    cover_url: book.cover_image ?
+                        "{{ asset('storage') }}/" + book.cover_image : null
                 };
                 this.preview = null;
                 this.openModal = true;
+            },
+
+            async openDetail(id) {
+                this.selectedDetail = null;
+                this.openDetailModal = true;
+
+                try {
+                    const res = await fetch(`/admin/books/${id}`, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!res.ok) throw new Error('Gagal memuat detail buku');
+                    this.selectedDetail = await res.json();
+                } catch (err) {
+                    alert(err.message);
+                    this.openDetailModal = false;
+                }
             },
 
             previewImage(event) {
@@ -289,7 +351,9 @@
                 if (file) {
                     this.selectedBook.remove_cover = 0; // kalau upload cover baru, jangan hapus
                     const reader = new FileReader();
-                    reader.onload = e => { this.preview = e.target.result }
+                    reader.onload = e => {
+                        this.preview = e.target.result
+                    }
                     reader.readAsDataURL(file);
                 } else {
                     this.preview = null;

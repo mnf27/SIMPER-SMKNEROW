@@ -4,19 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
-use App\Models\Kategori;
+use App\Models\Eksemplar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\BooksImport;
-use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Log;
 
 class BookController extends Controller
 {
     private function saveCover($file, $oldPath = null)
     {
-        // Hapus cover lama jika ada
         if ($oldPath && Storage::disk('public')->exists($oldPath)) {
             Storage::disk('public')->delete($oldPath);
         }
@@ -26,48 +26,26 @@ class BookController extends Controller
 
         $filename = time() . '.' . $file->getClientOriginalExtension();
         $path = 'covers/' . $filename;
-
         Storage::disk('public')->put($path, (string) $resized->encode());
 
         return $path;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $books = Buku::with('kategori')->latest()->paginate(10);
-        $categories = Kategori::all();
-
-        return view('admin.books.index', compact('books', 'categories'));
+        $books = Buku::latest()->paginate(10);
+        return view('admin.books.index', compact('books'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $categories = Kategori::all();
-        return view('admin.books.create', compact('categories'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'no_induk' => 'required|unique:buku,no_induk',
             'judul' => 'required|string|max:255',
             'penulis' => 'required|string|max:255',
             'penerbit' => 'required|string|max:255',
             'tahun_terbit' => 'required|digits:4|integer',
             'cetakan_edisi' => 'nullable|string|max:100',
             'klasifikasi' => 'nullable|string|max:100',
-            'id_kategori' => 'required|exists:kategori,id',
-            'jumlah_eksemplar' => 'required|integer|min:0',
             'asal' => 'nullable|string|max:255',
             'harga' => 'nullable|numeric',
             'keterangan' => 'nullable|string',
@@ -85,38 +63,21 @@ class BookController extends Controller
         return redirect()->route('admin.books.index')->with('success', 'Buku berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Buku $book)
     {
-        //
+        $book->load(['eksemplar']);
+        return response()->json($book);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Buku $book)
-    {
-        $categories = Kategori::all();
-        return view('admin.books.edit', compact('book', 'categories'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Buku $book)
     {
         $request->validate([
-            'no_induk' => 'required|unique:buku,no_induk,' . $book->id,
             'judul' => 'required|string|max:255',
             'penulis' => 'required|string|max:255',
             'penerbit' => 'required|string|max:255',
             'tahun_terbit' => 'required|digits:4|integer',
             'cetakan_edisi' => 'nullable|string|max:100',
             'klasifikasi' => 'nullable|string|max:100',
-            'id_kategori' => 'required|exists:kategori,id',
-            'jumlah_eksemplar' => 'required|integer|min:0',
             'asal' => 'nullable|string|max:255',
             'harga' => 'nullable|numeric',
             'keterangan' => 'nullable|string',
@@ -141,9 +102,6 @@ class BookController extends Controller
         return redirect()->route('admin.books.index')->with('success', 'Buku berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Buku $book)
     {
         if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
@@ -157,27 +115,57 @@ class BookController extends Controller
 
     public function import(Request $request)
     {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,csv,xls',
-        ]);
+        $request->validate(['file' => 'required|mimes:xlsx,csv,xls']);
 
         $import = new BooksImport;
         Excel::import($import, $request->file('file'));
 
         $messages = [];
-
-        if ($import->added > 0) {
-            $messages[] = $import->added . " data berhasil diimport.";
-        }
-
-        if ($import->skipped > 0) {
-            $messages[] = $import->skipped . " data dilewati (duplikat no_induk).";
-        }
-
-        if ($import->invalid > 0) {
-            $messages[] = $import->invalid . " data dilewati (judul/no_induk kosong).";
-        }
+        if ($import->addedBooks > 0)
+            $messages[] = "{$import->addedBooks} buku baru ditambahkan.";
+        if ($import->addedEksemplars > 0)
+            $messages[] = "{$import->addedEksemplars} eksemplar baru ditambahkan.";
+        if ($import->skipped > 0)
+            $messages[] = "{$import->skipped} eksemplar dilewati (duplikat).";
+        if ($import->invalid > 0)
+            $messages[] = "{$import->invalid} baris tidak valid (judul/no_induk kosong).";
 
         return redirect()->route('admin.books.index')->with('success', implode(' ', $messages));
+    }
+
+    public function addEksemplar(Request $request, Buku $book)
+    {
+        Log::info('Request masuk ke addEksemplar', [
+            'book_id' => $book->id,
+            'payload' => $request->all()
+        ]);
+
+        $request->validate([
+            'no_induk' => 'required|string|max:50|unique:eksemplar,no_induk',
+        ]);
+
+        try {
+            $eksemplar = $book->eksemplar()->create([
+                'no_induk' => $request->no_induk,
+                'status' => 'tersedia',
+            ]);
+
+            return response()->json(['success' => true, 'data' => $eksemplar]);
+        } catch (\Throwable $e) {
+            Log::error('Gagal tambah eksemplar: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteEksemplar($id)
+    {
+        $eksemplar = Eksemplar::find($id);
+
+        if (!$eksemplar) {
+            return response()->json(['success' => false, 'message' => 'Eksemplar tidak ditemukan'], 404);
+        }
+
+        $eksemplar->delete();
+        return response()->json(['success' => true]);
     }
 }

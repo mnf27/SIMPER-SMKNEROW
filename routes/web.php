@@ -1,11 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\ImportUserController;
-use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BookController;
-use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\RombelController;
-use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Admin\LoanController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -41,10 +38,10 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('rombels', RombelController::class);
 
-        Route::resource('categories', CategoryController::class);
-
         Route::resource('books', BookController::class);
         Route::post('books/import', [BookController::class, 'import'])->name('books.import');
+        Route::post('{book}/eksemplar', [BookController::class, 'addEksemplar'])->name('eksemplar.store');
+        Route::delete('eksemplar/{id}', [BookController::class, 'deleteEksemplar'])->name('eksemplar.destroy');
 
         Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
         Route::post('/loans/store', [LoanController::class, 'store'])->name('loans.store');
@@ -59,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
     // =====================
     Route::middleware('role:guru')->group(function () {
         Route::get('/guru/books', [\App\Http\Controllers\Guru\BookController::class, 'index'])->name('guru.books.index');
-        Route::post('/guru/books/pinjam', [\App\Http\Controllers\Guru\LoanController::class, 'store'])->name('guru.books.pinjam');
+        Route::post('/guru/books/pinjam/{id}', [\App\Http\Controllers\Guru\LoanController::class, 'store'])->name('guru.books.pinjam');
         Route::get('/guru/history', [\App\Http\Controllers\Guru\LoanController::class, 'history'])->name('guru.loans.history');
     });
 
@@ -68,8 +65,8 @@ Route::middleware(['auth'])->group(function () {
     // =====================
     Route::middleware('role:siswa')->group(function () {
         Route::get('/siswa/books', [\App\Http\Controllers\Siswa\BookController::class, 'index'])->name('siswa.books.index');
-    Route::post('/siswa/books/pinjam', [\App\Http\Controllers\Siswa\LoanController::class, 'store'])->name('siswa.books.pinjam');
-    Route::get('/siswa/history', [\App\Http\Controllers\Siswa\LoanController::class, 'history'])->name('siswa.loans.history');
+        Route::post('/siswa/books/pinjam', [\App\Http\Controllers\Siswa\LoanController::class, 'store'])->name('siswa.books.pinjam');
+        Route::get('/siswa/history', [\App\Http\Controllers\Siswa\LoanController::class, 'history'])->name('siswa.loans.history');
     });
 });
 

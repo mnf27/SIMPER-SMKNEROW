@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('kategori', function (Blueprint $table) {
+        Schema::create('eksemplar', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->foreignId('buku_id')->constrained('buku')->onDelete('cascade');
+            $table->string('no_induk')->unique();
+            $table->enum('status', ['tersedia', 'dipinjam', 'hilang'])->default('tersedia');
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('kategori');
+        Schema::dropIfExists('eksemplar');
     }
 };

@@ -29,27 +29,11 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             Dashboard
                         </x-nav-link>
-                    @elseif(auth()->user()->role === 'guru')
-                        <x-nav-link :href="route('guru.dashboard')" :active="request()->routeIs('guru.dashboard')">
-                            Dashboard
-                        </x-nav-link>
-                    @else
-                        <x-nav-link :href="route('siswa.dashboard')" :active="request()->routeIs('siswa.dashboard')">
-                            Dashboard
-                        </x-nav-link>
-                    @endif
-
-                    {{-- Menu khusus Admin --}}
-                    @if(auth()->user()->role == 'admin')
                         <x-nav-link :href="route('admin.import.index')" :active="request()->routeIs('admin.import.*')">
                             Import User
                         </x-nav-link>
                         <x-nav-link :href="route('admin.rombels.index')" :active="request()->routeIs('admin.rombels.*')">
                             Kelola Rombel
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.categories.index')"
-                            :active="request()->routeIs('admin.categories.*')">
-                            Kelola Kategori
                         </x-nav-link>
                         <x-nav-link :href="route('admin.books.index')" :active="request()->routeIs('admin.books.*')">
                             Kelola Buku
@@ -60,26 +44,38 @@
                         <x-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
                             Laporan
                         </x-nav-link>
-                    @endif
 
-                    {{-- Menu Guru --}}
-                    @if(auth()->user()->role == 'guru')
+                    @elseif(auth()->user()->role === 'guru')
+                        <x-nav-link :href="route('guru.dashboard')" :active="request()->routeIs('guru.dashboard')">
+                            Dashboard
+                        </x-nav-link>
                         <x-nav-link :href="route('guru.books.index')" :active="request()->routeIs('guru.books.*')">
                             Daftar Buku
                         </x-nav-link>
                         <x-nav-link :href="route('guru.loans.history')" :active="request()->routeIs('guru.loans.*')">
                             Peminjaman Saya
                         </x-nav-link>
-                    @endif
 
-                    {{-- Menu Siswa --}}
-                    @if(auth()->user()->role == 'siswa')
+                    @else
+                        <x-nav-link :href="route('siswa.dashboard')" :active="request()->routeIs('siswa.dashboard')">
+                            Dashboard
+                        </x-nav-link>
                         <x-nav-link :href="route('siswa.books.index')" :active="request()->routeIs('siswa.books.*')">
                             Daftar Buku
                         </x-nav-link>
                         <x-nav-link :href="route('siswa.loans.history')" :active="request()->routeIs('siswa.loans.*')">
                             Peminjaman Saya
                         </x-nav-link>
+                    @endif
+
+                    {{-- Menu Guru --}}
+                    @if(auth()->user()->role == 'guru')
+
+                    @endif
+
+                    {{-- Menu Siswa --}}
+                    @if(auth()->user()->role == 'siswa')
+
                     @endif
                 </div>
             </div>

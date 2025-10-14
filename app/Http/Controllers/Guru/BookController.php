@@ -12,6 +12,7 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $query = Buku::select(
+            'id',
             'judul',
             'penulis',
             'penerbit',
@@ -20,21 +21,11 @@ class BookController extends Controller
             'klasifikasi',
             'asal',
             'harga',
-            DB::raw('SUM(jumlah_eksemplar) as total_eksemplar'),
-            DB::raw('COUNT(*) as total_data')
-        )
-            ->groupBy(
-                'judul',
-                'penulis',
-                'penerbit',
-                'tahun_terbit',
-                'cetakan_edisi',
-                'klasifikasi',
-                'asal',
-                'harga'
-            )
-            ->with('kategori');
-
+            'jumlah_eksemplar',
+            'keterangan',
+            'cover_image',
+        );
+            
         // Filter pencarian
         if ($request->filled('search')) {
             $query->where('judul', 'like', '%' . $request->search . '%');

@@ -3,19 +3,21 @@
 namespace App\Imports;
 
 use App\Models\Buku;
+use App\Models\Eksemplar;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Log;
 
 class BooksImport implements ToModel, WithHeadingRow
 {
-    public $added = 0;
+    public $addedBooks = 0;
+    public $addedEksemplars = 0;
     public $skipped = 0;
     public $invalid = 0;
 
     public function headingRow(): int
     {
-        return 4; // header mulai di baris ke-4
+        return 4;
     }
 
     public function model(array $row)
@@ -23,45 +25,66 @@ class BooksImport implements ToModel, WithHeadingRow
         // Normalisasi key heading
         $normalized = [];
         foreach ($row as $key => $value) {
-            $normalized[strtolower(str_replace([' ', '.', '/'], '_', $key))] = $value;
+            $normalized[strtolower(str_replace([' ', '.', '/'], '_', trim($key)))] = trim($value);
         }
 
-        // Normalisasi nilai
-        $noInduk = isset($normalized['no_induk'])
-            ? trim(strval($normalized['no_induk']))
-            : null;
+        $noInduk = $normalized['no_induk'] ?? null;
+        $judul = $normalized['judul'] ?? null;
 
-        $judul = isset($normalized['judul'])
-            ? trim(strval($normalized['judul']))
-            : null;
-
+        // Validasi wajib
         if (empty($noInduk) || empty($judul)) {
             $this->invalid++;
             return null;
         }
 
-        // Cek duplikat dengan nilai yang sudah dibersihkan
-        if (Buku::where('no_induk', $noInduk)->exists()) {
-            Log::info("Skipped karena duplikat no_induk: " . $noInduk);
+        // Ambil data kolom lainnya
+        $penulis = $normalized['penulis'] ?? null;
+        $penerbit = $normalized['penerbit'] ?? null;
+        $tahun = $normalized['tahun'] ?? null;
+        $cetakanEdisi = $normalized['cetakan_edisi'] ?? ($normalized['cetakan/edisi'] ?? null);
+        $klasifikasi = $normalized['no_class'] ?? null;
+        $asal = $normalized['asal'] ?? null;
+        $harga = is_numeric($normalized['harga'] ?? null) ? $normalized['harga'] : 0;
+        $keterangan = $normalized['keterangan'] ?? null;
+
+        // Buat atau ambil buku
+        $buku = Buku::firstOrCreate(
+            [
+                'judul' => $judul,
+                'penulis' => $penulis,
+                'penerbit' => $penerbit,
+                'tahun_terbit' => $tahun,
+                'cetakan_edisi' => $cetakanEdisi,
+                'klasifikasi' => $klasifikasi,
+            ],
+            [
+                'asal' => $asal,
+                'harga' => $harga,
+                'keterangan' => $keterangan,
+                'jumlah_eksemplar' => 0, // awalnya 0, nanti akan diupdate
+            ]
+        );
+
+        if ($buku->wasRecentlyCreated) {
+            $this->addedBooks++;
+        }
+
+        // Cek apakah eksemplar sudah ada
+        if (Eksemplar::where('no_induk', $noInduk)->exists()) {
             $this->skipped++;
+            Log::info("Duplikat no_induk dilewati: {$noInduk}");
             return null;
         }
 
-        $this->added++;
-
-        return new Buku([
+        // Buat eksemplar baru
+        Eksemplar::create([
+            'buku_id' => $buku->id,
             'no_induk' => $noInduk,
-            'judul' => $judul,
-            'penulis' => isset($normalized['penulis']) ? trim($normalized['penulis']) : null,
-            'penerbit' => isset($normalized['penerbit']) ? trim($normalized['penerbit']) : null,
-            'tahun_terbit' => $normalized['tahun'] ?? null,
-            'cetakan_edisi' => $normalized['cetakan_edisi'] ?? null,
-            'klasifikasi' => $normalized['no_class'] ?? null,
-            'id_kategori' => 1, // kategori default
-            'jumlah_eksemplar' => $normalized['jumlah_eksemplar'] ?? 0,
-            'asal' => isset($normalized['asal']) ? trim($normalized['asal']) : null,
-            'harga' => is_numeric($normalized['harga'] ?? null) ? $normalized['harga'] : 0,
-            'keterangan' => isset($normalized['keterangan']) ? trim($normalized['keterangan']) : null,
+            'status' => 'tersedia',
         ]);
+
+        $buku->increment('jumlah_eksemplar');
+
+        $this->addedEksemplars++;
     }
 }

@@ -72,7 +72,7 @@ class SiswaImport implements ToCollection
                 'user_id' => $user->id,
                 'nipd' => $nipd,
                 'nisn' => $nisn,
-                'id_rombel' => $rombel ? $rombel->id : null, // nanti diisi manual
+                'id_rombel' => $rombel ? $rombel->id : null,
             ]);
         }
     }

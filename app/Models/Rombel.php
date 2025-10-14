@@ -16,9 +16,19 @@ class Rombel extends Model
         'tingkat',
         'jurusan',
     ];
-    
+
     public function siswa()
     {
         return $this->hasMany(Siswa::class, 'id_rombel');
+    }
+
+    public function getTingkatLabelAttribute()
+    {
+        return match ($this->tingkat) {
+            '10' => 'X',
+            '11' => 'XI',
+            '12' => 'XII',
+            default => $this->tingkat, // biar aman kalau ada data lain
+        };
     }
 }

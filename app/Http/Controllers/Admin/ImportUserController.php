@@ -15,7 +15,7 @@ class ImportUserController extends Controller
     public function index()
     {
         $guru = Guru::with('user')->latest()->paginate(10);
-        $siswa = Siswa::with('user')->latest()->take(20)->paginate(10);
+        $siswa = Siswa::with('user')->latest()->paginate(10);
 
         return view('admin.import.index', compact('guru', 'siswa'));
     }

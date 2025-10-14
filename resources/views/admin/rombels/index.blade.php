@@ -42,7 +42,7 @@
                             @forelse($rombels as $rombel)
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td class="border px-4 py-2">{{ $rombel->nama }}</td>
-                                    <td class="border px-4 py-2">{{ $rombel->tingkat }}</td>
+                                    <td class="border px-4 py-2">{{ $rombel->tingkat_label }}</td>
                                     <td class="border px-4 py-2">{{ $rombel->jurusan }}</td>
                                     <td class="border px-4 py-2 text-center">
                                         <div class="flex justify-center gap-2">

@@ -12,17 +12,16 @@ return new class extends Migration {
     {
         Schema::create('buku', function (Blueprint $table) {
             $table->id();
-            $table->string('no_induk')->unique();
             $table->string('judul');
-            $table->string('penulis');
-            $table->string('penerbit');
-            $table->year('tahun_terbit');
+            $table->string('penulis')->nullable();
+            $table->string('penerbit')->nullable();
+            $table->year('tahun_terbit')->nullable();
             $table->string('cetakan_edisi')->nullable();
             $table->string('klasifikasi')->nullable();
-            $table->foreignId('id_kategori')->constrained('kategori')->onDelete('cascade');
-            $table->integer('jumlah_eksemplar');
+            $table->string('no_class')->nullable();
             $table->string('asal')->nullable();
             $table->decimal('harga', 12, 2)->nullable();
+            $table->integer('jumlah_eksemplar')->default(0);
             $table->text('keterangan')->nullable();
             $table->string('cover_image')->nullable();
             $table->timestamps();
