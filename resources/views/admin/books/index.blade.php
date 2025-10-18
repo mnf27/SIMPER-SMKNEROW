@@ -45,13 +45,11 @@
                     <thead>
                         <tr class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
                             <th class="p-3 text-center">No</th>
-                            <!-- <th class="p-3">Cover</th> -->
                             <th class="p-3">Judul</th>
                             <th class="p-3">Penulis</th>
                             <th class="p-3">Penerbit</th>
                             <th class="p-3 text-center">Tahun</th>
                             <th class="p-3 text-center">Jumlah Eksemplar</th>
-                            <!-- <th class="p-3">Keterangan</th> -->
                             <th class="p-3 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -59,21 +57,11 @@
                         @forelse($books as $book)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                                 <td class="p-3 text-center">{{ $loop->iteration }}</td>
-                                <!-- <td class="p-3 text-center">
-                                    @if ($book->cover_image)
-                                        <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover {{ $book->judul }}"
-                                            class="h-16 w-auto mx-auto rounded shadow">
-                                    @else
-                                        <span class="text-gray-400">-</span>
-                                    @endif
-                                </td> -->
                                 <td class="p-3 font-semibold">{{ $book->judul }}</td>
                                 <td class="p-3">{{ $book->penulis }}</td>
                                 <td class="p-3">{{ $book->penerbit }}</td>
                                 <td class="p-3 text-center">{{ $book->tahun_terbit }}</td>
                                 <td class="p-3 text-center font-semibold">{{ $book->jumlah_eksemplar }}</td>
-                                <!-- <td class="p-3 max-w-xs truncate" title="{{ $book->keterangan }}"> -->
-                                {{ $book->keterangan ?? '-' }}
                                 </td>
                                 <td class="p-3 text-center flex justify-center gap-2">
                                     {{-- Tombol Detail --}}
@@ -130,20 +118,53 @@
 
                 <template x-if="selectedDetail">
                     <div>
-                        <div class="flex gap-4 mb-4">
-                            <img :src="selectedDetail.cover_image ? '{{ asset('storage') }}/' + selectedDetail.cover_image :
-                                '{{ asset('images/default_cover.png') }}'" alt="Cover Buku"
-                                class="w-32 h-44 object-cover rounded border">
-                            <div>
-                                <h3 class="text-xl font-semibold" x-text="selectedDetail.judul"></h3>
-                                <p>Penulis: <span x-text="selectedDetail.penulis"></span></p>
-                                <p>Penerbit: <span x-text="selectedDetail.penerbit"></span></p>
-                                <p>Tahun: <span x-text="selectedDetail.tahun_terbit"></span></p>
-                                <p>Keterangan: <span x-text="selectedDetail.keterangan || '-'"></span>
+                        <!-- Bagian info utama -->
+                        <div class="flex flex-col md:flex-row gap-4 mb-4">
+                            <img :src="selectedDetail.cover_image 
+        ? '{{ asset('storage') }}/' + selectedDetail.cover_image 
+        : '{{ asset('images/default_cover.png') }}'" alt="Cover Buku"
+                                class="w-32 h-44 object-cover rounded border mx-auto md:mx-0 bg-gray-50" />
+
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold mb-1" x-text="selectedDetail.judul"></h3>
+                                <p><span x-text="selectedDetail.penulis"></span></p>
+                                <p><span x-text="selectedDetail.tahun_terbit"></span></p>
+                                <p><strong>Penerbit:</strong> <span x-text="selectedDetail.penerbit"></span></p>
+                                <p><strong>Cetakan/Edisi:</strong> <span
+                                        x-text="selectedDetail.cetakan_edisi || '-'"></span>
                                 </p>
+                                <p><strong>No. Klas:</strong> <span x-text="selectedDetail.klasifikasi || '-'"></span>
+                                </p>
+                                <p><strong>Asal Buku:</strong> <span x-text="selectedDetail.asal || '-'"></span>
+                                </p>
+                                <p><strong>Keterangan:</strong> <span x-text="selectedDetail.keterangan || '-'"></span>
+                                </p>
+
+                                <!-- Info tambahan -->
+                                <div class="mt-3 p-3 bg-gray-50 border rounded-lg text-sm">
+                                    <p><strong>Total Eksemplar:</strong>
+                                        <span x-text="selectedDetail.eksemplar?.length || 0"></span>
+                                    </p>
+                                    <p><strong>Tersedia:</strong>
+                                        <span
+                                            x-text="selectedDetail.eksemplar?.filter(e => e.status === 'tersedia').length || 0"></span>
+                                    </p>
+                                    <p><strong>Dipinjam:</strong>
+                                        <span
+                                            x-text="selectedDetail.eksemplar?.filter(e => e.status === 'dipinjam').length || 0"></span>
+                                    </p>
+                                    <template x-if="selectedDetail.updated_at">
+                                        <p><strong>Terakhir Diperbarui:</strong>
+                                            <span
+                                                x-text="new Date(selectedDetail.updated_at).toLocaleString('id-ID')"></span>
+                                        </p>
+                                    </template>
+                                </div>
                             </div>
                         </div>
-                        <h4 class="font-semibold mb-2">📦 Daftar Eksemplar:</h4>
+
+                        <!-- Bagian daftar eksemplar -->
+                        <h4 class="font-semibold mb-2 mt-4">📦 Daftar Eksemplar:</h4>
 
                         <template x-if="selectedDetail.eksemplar.length">
                             <table class="w-full border border-gray-300 text-sm">
@@ -156,15 +177,16 @@
                                 <tbody>
                                     <template x-for="e in selectedDetail.eksemplar" :key="e.id">
                                         <tr>
-                                            <td class="p-2 border" x-text="e.no_induk"></td>
-                                            <td class="p-2 border capitalize" x-text="e.status"></td>
+                                            <td class="p-2 border text-center" x-text="e.no_induk"></td>
+                                            <td class="p-2 border text-center capitalize" x-text="e.status"></td>
                                         </tr>
                                     </template>
                                 </tbody>
                             </table>
                         </template>
+
                         <template x-if="!selectedDetail.eksemplar.length">
-                            <p class="text-gray-500 text-center py-6">Memuat data buku...</p>
+                            <p class="text-gray-500 text-center py-6">Belum ada eksemplar untuk buku ini 📚</p>
                         </template>
                     </div>
                 </template>
@@ -235,6 +257,27 @@
                                 <input type="text" name="tahun_terbit" x-model="selectedBook.tahun_terbit" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
                             focus:ring-2 focus:ring-blue-400 px-4 py-2.5" pattern="\d{4}" maxlength="4"
                                     placeholder="contoh: 2020" required>
+                            </div>
+
+                            {{-- Cetakan/Edisi --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-800 mb-1">Cetakan/Edisi</label>
+                                <input type="text" name="cetakan_edisi" x-model="selectedBook.cetakan_edisi" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
+                            </div>
+
+                            {{-- No. Class --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-800 mb-1">No. Class</label>
+                                <input type="text" name="klasifikasi" x-model="selectedBook.klasifikasi" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
+                            </div>
+
+                            {{-- Asal --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-800 mb-1">Asal</label>
+                                <input type="text" name="asal" x-model="selectedBook.asal" class="w-full rounded-xl border-gray-300 bg-gray-50 shadow-sm
+                            focus:ring-2 focus:ring-blue-400 px-4 py-2.5" required>
                             </div>
 
                             {{-- Tambah Eksemplar --}}

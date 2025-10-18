@@ -13,7 +13,7 @@ class Peminjaman extends Model
 
     protected $fillable = [
         'id_user',
-        'id_buku',
+        'eksemplar_id',
         'tanggal_pinjam',
         'tanggal_kembali',
         'tanggal_dikembalikan',
@@ -34,9 +34,14 @@ class Peminjaman extends Model
     }
 
     // Relasi ke Buku
+    public function eksemplar()
+    {
+        return $this->belongsTo(Eksemplar::class, 'eksemplar_id');
+    }
+
     public function buku()
     {
-        return $this->belongsTo(Buku::class, 'id_buku');
+        return $this->hasOneThrough(Buku::class, Eksemplar::class, 'id', 'id', 'eksemplar_id', 'buku_id');
     }
 
     // Accessor untuk status label

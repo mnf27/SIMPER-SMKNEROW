@@ -28,12 +28,15 @@ class BooksImport implements ToModel, WithHeadingRow
             $normalized[strtolower(str_replace([' ', '.', '/'], '_', trim($key)))] = trim($value);
         }
 
+        Log::info('HEADER KEYS: ' . json_encode(array_keys($normalized)));
+
         $noInduk = $normalized['no_induk'] ?? null;
         $judul = $normalized['judul'] ?? null;
 
         // Validasi wajib
         if (empty($noInduk) || empty($judul)) {
             $this->invalid++;
+            Log::warning("Baris dilewati karena no_induk/judul kosong: " . json_encode($row));
             return null;
         }
 
@@ -41,11 +44,14 @@ class BooksImport implements ToModel, WithHeadingRow
         $penulis = $normalized['penulis'] ?? null;
         $penerbit = $normalized['penerbit'] ?? null;
         $tahun = $normalized['tahun'] ?? null;
-        $cetakanEdisi = $normalized['cetakan_edisi'] ?? ($normalized['cetakan/edisi'] ?? null);
+        $cetakanEdisi = $normalized['cetakanedisi'] ?? $normalized['cetakan_edisi'] ?? null;
         $klasifikasi = $normalized['no_class'] ?? null;
         $asal = $normalized['asal'] ?? null;
         $harga = is_numeric($normalized['harga'] ?? null) ? $normalized['harga'] : 0;
         $keterangan = $normalized['keterangan'] ?? null;
+
+        $cetakanEdisi = $cetakanEdisi !== '' ? $cetakanEdisi : null;
+        $klasifikasi = $klasifikasi !== '' ? $klasifikasi : null;
 
         // Buat atau ambil buku
         $buku = Buku::firstOrCreate(
@@ -54,10 +60,10 @@ class BooksImport implements ToModel, WithHeadingRow
                 'penulis' => $penulis,
                 'penerbit' => $penerbit,
                 'tahun_terbit' => $tahun,
-                'cetakan_edisi' => $cetakanEdisi,
                 'klasifikasi' => $klasifikasi,
             ],
             [
+                'cetakan_edisi' => $cetakanEdisi,
                 'asal' => $asal,
                 'harga' => $harga,
                 'keterangan' => $keterangan,
@@ -67,6 +73,7 @@ class BooksImport implements ToModel, WithHeadingRow
 
         if ($buku->wasRecentlyCreated) {
             $this->addedBooks++;
+            Log::info("Buku baru ditambahkan: {$judul}");
         }
 
         // Cek apakah eksemplar sudah ada

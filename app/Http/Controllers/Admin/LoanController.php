@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Peminjaman;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Peminjaman;
 use App\Models\User;
 use App\Models\Buku;
+use App\Models\Eksemplar;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class LoanController extends Controller
@@ -20,8 +21,8 @@ class LoanController extends Controller
             ->where('tanggal_kembali', '<', Carbon::today())
             ->update(['status' => 'terlambat']);
 
-        // ambil query baru
-        $query = Peminjaman::with(['user', 'buku']);
+        // ambil data peminjaman beserta relasi user dan buku dari eksemplar
+        $query = Peminjaman::with(['user', 'eksemplar.buku']);
 
         if ($status) {
             $query->where('status', $status);
@@ -29,66 +30,58 @@ class LoanController extends Controller
 
         $loans = $query->latest()->paginate(10);
         $users = User::all();
-        $books = Buku::where('jumlah_eksemplar', '>', 0)->get();
+        $eksemplars = Eksemplar::with('buku')->where('status', 'tersedia')->get();
 
-        return view('admin.loans.index', compact('loans', 'users', 'books', 'status'));
+        return view('admin.loans.index', compact('loans', 'users', 'eksemplars', 'status'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'id_user' => 'required|exists:users,id',
-            'id_buku' => 'required|exists:buku,id',
+            'eksemplar_id' => 'required|exists:eksemplar,id',
             'tanggal_pinjam' => 'required|date',
             'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
         ]);
 
+        $eksemplar = Eksemplar::findOrFail($request->eksemplar_id);
+
+        if ($eksemplar->status !== 'tersedia') {
+            return back()->with('error', 'Eksemplar ini sedang dipinjam atau tidak tersedia.');
+        }
+
+        // buat peminjaman baru
         Peminjaman::create([
             'id_user' => $request->id_user,
-            'id_buku' => $request->id_buku,
+            'id_buku' => $eksemplar->buku_id,
+            'eksemplar_id' => $eksemplar->id,
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'tanggal_kembali' => $request->tanggal_kembali,
-            'status' => 'aktif', // sesuai default migrasi
+            'status' => 'aktif',
             'jumlah' => 1,
         ]);
 
-        // kurangi stok buku
-        Buku::where('id', $request->id_buku)->decrement('jumlah_eksemplar');
+        // ubah status eksemplar jadi dipinjam
+        $eksemplar->update(['status' => 'dipinjam']);
 
         return redirect()->route('admin.loans.index')->with('success', 'Peminjaman berhasil dibuat.');
     }
 
-    public function returnBook(Peminjaman $loan, Request $request)
+    public function returnBook(Peminjaman $loan)
     {
-        if ($loan->status !== 'aktif' && $loan->status !== 'terlambat') {
+        if (!in_array($loan->status, ['aktif', 'terlambat'])) {
             return back()->with('error', 'Peminjaman ini sudah dikembalikan.');
         }
 
-        $loan->status = 'dikembalikan';
-        $loan->tanggal_dikembalikan = Carbon::now();
-
-        // cek keterlambatan
-        if ($loan->tanggal_dikembalikan->greaterThan(Carbon::parse($loan->tanggal_kembali))) {
-            $loan->denda = $request->input('denda', 0); // kalau mau otomatis bisa hitung di sini
-        }
-
-        $loan->save();
-
-        // balikin stok buku
-        Buku::where('id', $loan->id_buku)->increment('jumlah_eksemplar');
-
-        return back()->with('success', 'Pengembalian berhasil dikonfirmasi.');
-    }
-
-    public function addFine(Peminjaman $loan, Request $request)
-    {
-        $request->validate([
-            'denda' => 'required|numeric|min:0',
+        $loan->update([
+            'status' => 'dikembalikan',
+            'tanggal_dikembalikan' => Carbon::now(),
         ]);
 
-        $loan->denda = $request->denda;
-        $loan->save();
+        if ($loan->eksemplar) {
+            $loan->eksemplar->update(['status' => 'tersedia']);
+        }
 
-        return back()->with('success', 'Denda berhasil ditambahkan.');
+        return back()->with('success', 'Buku berhasil dikembalikan.');
     }
 }

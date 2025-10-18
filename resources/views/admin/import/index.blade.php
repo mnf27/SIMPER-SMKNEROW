@@ -16,9 +16,8 @@
                 <form action="{{ route('admin.import.guru') }}" method="POST" enctype="multipart/form-data"
                     class="space-y-4">
                     @csrf
-                    <input type="file" name="file" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                                  file:rounded-full file:border-0 file:text-sm file:font-semibold
-                                  file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                    <input type="file" name="file" required
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                     <x-primary-button>📤 Upload</x-primary-button>
                 </form>
             </div>
@@ -72,9 +71,8 @@
                 <form action="{{ route('admin.import.siswa') }}" method="POST" enctype="multipart/form-data"
                     class="space-y-4">
                     @csrf
-                    <input type="file" name="file" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                                  file:rounded-full file:border-0 file:text-sm file:font-semibold
-                                  file:bg-green-50 file:text-green-700 hover:file:bg-green-100" />
+                    <input type="file" name="file" required
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100" />
                     <x-primary-button>📤 Upload</x-primary-button>
                 </form>
             </div>

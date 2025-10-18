@@ -13,7 +13,7 @@ class GuruImport implements ToCollection
     public function collection(Collection $rows)
     {
         // skip 6 baris header pertama
-        $rows = $rows->skip(6);
+        $rows = $rows->skip(5);
 
         foreach ($rows as $row) {
             if (!$row[1])
