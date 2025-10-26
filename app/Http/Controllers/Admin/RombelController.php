@@ -70,6 +70,6 @@ class RombelController extends Controller
     public function destroy(Rombel $rombel)
     {
         $rombel->delete();
-        return redirect()->route('admin.rombels.index')->with('success', 'Rombel berhasil dihapus.');
+        return back()->with('success', 'Rombel berhasil dihapus.');
     }
 }

@@ -94,7 +94,6 @@
                 </form>
             </div>
 
-
             <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div
@@ -141,34 +140,34 @@
                     <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
                         <thead class="bg-gray-200 dark:bg-gray-700">
                             <tr class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                                <th class="py-2 px-3 text-center">#</th>
-                                <th class="py-2 px-3">Nama Peminjam</th>
-                                <th class="py-2 px-3">Role</th>
-                                <th class="py-2 px-3">Rombel</th>
-                                <th class="py-2 px-3">Judul Buku</th>
-                                <th class="py-2 px-3">No. Eksemplar</th>
-                                <th class="py-2 px-3 text-center">Tgl Pinjam</th>
-                                <th class="py-2 px-3 text-center">Tgl Kembali</th>
-                                <th class="py-2 px-3 text-center">Status</th>
+                                <th class="py-2 px-3 border text-center">#</th>
+                                <th class="py-2 px-3 border">Nama Peminjam</th>
+                                <th class="py-2 px-3 border">Role</th>
+                                <th class="py-2 px-3 border">Rombel</th>
+                                <th class="py-2 px-3 border">Judul Buku</th>
+                                <th class="py-2 px-3 border">No. Eksemplar</th>
+                                <th class="py-2 px-3 border text-center">Tgl Pinjam</th>
+                                <th class="py-2 px-3 border text-center">Tgl Kembali</th>
+                                <th class="py-2 px-3 border text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($peminjaman as $index => $item)
                                 <tr
                                     class="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900">
-                                    <td class="py-2 px-3 text-center">{{ $peminjaman->firstItem() + $index }}</td>
-                                    <td class="py-2 px-3">{{ $item->user->nama ?? '-' }}</td>
-                                    <td class="py-2 px-3">{{ ucfirst($item->user->role ?? '-') }}</td>
-                                    <td class="py-2 px-3">{{ $item->user->siswa->rombel->nama ?? '-' }}</td>
-                                    <td class="py-2 px-3">{{ $item->eksemplar->buku->judul ?? '-' }}</td>
-                                    <td class="py-2 px-3">{{ $item->eksemplar->no_induk ?? '-' }}</td>
-                                    <td class="py-2 px-3 text-center">
+                                    <td class="py-2 px-3 border text-center">{{ $peminjaman->firstItem() + $index }}</td>
+                                    <td class="py-2 px-3 border">{{ $item->user->nama ?? '-' }}</td>
+                                    <td class="py-2 px-3 border">{{ ucfirst($item->user->role ?? '-') }}</td>
+                                    <td class="py-2 px-3 border">{{ $item->user->siswa->rombel->nama ?? '-' }}</td>
+                                    <td class="py-2 px-3 border">{{ $item->eksemplar->buku->judul ?? '-' }}</td>
+                                    <td class="py-2 px-3 border">{{ $item->eksemplar->no_induk ?? '-' }}</td>
+                                    <td class="py-2 px-3 border text-center">
                                         {{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d/m/Y') }}
                                     </td>
-                                    <td class="py-2 px-3 text-center">
+                                    <td class="py-2 px-3 border text-center">
                                         {{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d/m/Y') : '-' }}
                                     </td>
-                                    <td class="py-2 px-3 text-center">{{ ucfirst($item->status ?? '-') }}</td>
+                                    <td class="py-2 px-3 border text-center">{{ ucfirst($item->status ?? '-') }}</td>
                                 </tr>
                             @empty
                                 <tr>

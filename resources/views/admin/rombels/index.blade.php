@@ -1,83 +1,142 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight flex items-center gap-2">
-            🏫 {{ __('Kelola Rombel') }}
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Kelola Rombel') }}
         </h2>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-6">
-
-            {{-- Tombol tambah --}}
-            <div class="flex justify-end">
-                <a href="{{ route('admin.rombels.create') }}"
-                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-semibold rounded-xl shadow hover:opacity-90 transition">
-                    ➕ Tambah Rombel
-                </a>
-            </div>
-
-            {{-- Pesan sukses --}}
-            @if(session('success'))
-                <div class="p-4 bg-green-100 border border-green-400 text-green-800 rounded-xl shadow">
-                    {{ session('success') }}
+    <div class="py-8" x-data="{ openTambah: false, openEdit: false, selected: { id: '', nama: '', kelas: '' } }">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Daftar Rombel</h3>
+                    <button @click="openTambah = true"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        + Tambah Rombel
+                    </button>
                 </div>
-            @endif
 
-            {{-- Tabel Rombel --}}
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
-                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                    📋 Daftar Rombel
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full border rounded-lg overflow-hidden">
-                        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                            <tr>
-                                <th class="px-4 py-2 border text-left">Nama Rombel</th>
-                                <th class="px-4 py-2 border text-left">Tingkat</th>
-                                <th class="px-4 py-2 border text-left">Jurusan</th>
-                                <th class="px-4 py-2 border text-center">Aksi</th>
+                <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
+                    <thead class="bg-gray-200 dark:bg-gray-700">
+                        <tr>
+                            <th class="py-2 px-3 border">#</th>
+                            <th class="py-2 px-3 border">Tingkat</th>
+                            <th class="py-2 px-3 border">Jurusan</th>
+                            <th class="py-2 px-3 border">Nama Rombel</th>
+                            <th class="py-2 px-3 border text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($rombels as $rombel)
+                            <tr class="border-b border-gray-300 dark:border-gray-700">
+                                <td class="py-2 px-3 border">{{ $loop->iteration }}</td>
+                                <td class="py-2 px-3 border">{{ $rombel->tingkat }}</td>
+                                <td class="py-2 px-3 border">{{ $rombel->jurusan }}</td>
+                                <td class="py-2 px-3 border">{{ $rombel->nama }}</td>
+                                <td class="py-2 px-3 border text-center space-x-2">
+                                    <button @click="
+                                                                    openEdit = true;
+                                                                    selected.id = '{{ $rombel->id }}';
+                                                                    selected.tingkat = '{{ $rombel->tingkat }}';
+                                                                    selected.jurusan = '{{ $rombel->jurusan }}';
+                                                                    selected.nama = '{{ $rombel->nama }}';
+                                                                " class="text-black-500 hover:underline">
+                                        Edit
+                                    </button>
+                                    <form action="{{ route('admin.rombels.destroy', $rombel->id) }}" method="POST"
+                                        class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:underline"
+                                            onclick="return confirm('Yakin ingin menghapus rombel ini?')">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($rombels as $rombel)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                    <td class="border px-4 py-2">{{ $rombel->nama }}</td>
-                                    <td class="border px-4 py-2">{{ $rombel->tingkat_label }}</td>
-                                    <td class="border px-4 py-2">{{ $rombel->jurusan }}</td>
-                                    <td class="border px-4 py-2 text-center">
-                                        <div class="flex justify-center gap-2">
-                                            <a href="{{ route('admin.rombels.edit', $rombel) }}"
-                                                class="px-3 py-1 bg-yellow-500 text-white rounded-lg text-sm shadow hover:opacity-90 transition">
-                                                ✏️ Edit
-                                            </a>
-                                            <form action="{{ route('admin.rombels.destroy', $rombel) }}" method="POST"
-                                                onsubmit="return confirm('Yakin hapus?')">
-                                                @csrf @method('DELETE')
-                                                <button type="submit"
-                                                    class="px-3 py-1 bg-red-600 text-white rounded-lg text-sm shadow hover:opacity-90 transition">
-                                                    🗑️ Hapus
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-3 text-gray-500">
-                                        Belum ada rombel
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-4">Belum ada data rombel.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
 
-                {{-- Pagination --}}
-                <div class="mt-4">
-                    {{ $rombels->links() }}
-                </div>
+                <div class="mt-4">{{ $rombels->links() }}</div>
             </div>
 
+            <!-- Modal Tambah -->
+            <x-modal title="Tambah Rombel" show="openTambah">
+                <form action="{{ route('admin.rombels.store') }}" method="POST">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Tingkat</label>
+                        <select name="tingkat"
+                            class="w-full mt-1 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">-- Pilih Tingkat --</option>
+                            <option value="10">X</option>
+                            <option value="11">XI</option>
+                            <option value="12">XII</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Jurusan</label>
+                        <input type="text" name="jurusan"
+                            class="w-full mt-1 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Nama</label>
+                        <input type="text" name="nama"
+                            class="w-full mt-1 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="flex justify-end space-x-2 mt-6">
+                        <button type="button" @click="openTambah = false"
+                            class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </x-modal>
+
+            <!-- Modal Edit -->
+            <x-modal title="Edit Rombel" show="openEdit">
+                <form :action="`{{ url('admin/rombels') }}/${selected.id}`" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Tingkat</label>
+                        <select name="tingkat" x-model="selected.tingkat"
+                            class="w-full mt-1 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">-- Pilih Tingkat --</option>
+                            <option value="10">X</option>
+                            <option value="11">XI</option>
+                            <option value="12">XII</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Jurusan</label>
+                        <input type="text" name="jurusan" x-model="selected.jurusan"
+                            class="w-full mt-1 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Nama</label>
+                        <input type="text" name="nama" x-model="selected.nama"
+                            class="w-full mt-1 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div class="flex justify-end space-x-2 mt-6">
+                        <button type="button" @click="openEdit = false"
+                            class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+                            Update
+                        </button>
+                    </div>
+                </form>
+            </x-modal>
         </div>
     </div>
 </x-app-layout>

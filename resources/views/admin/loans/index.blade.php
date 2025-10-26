@@ -62,36 +62,36 @@
                     <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
                         <thead class="bg-gray-200 dark:bg-gray-700">
                             <tr>
-                                <th class="py-2 px-3 text-center">
+                                <th class="py-2 px-3 border text-center">
                                     <input type="checkbox" id="select-all">
                                 </th>
-                                <th class="py-2 px-3">Peminjam</th>
-                                <th class="py-2 px-3">Role</th>
-                                <th class="py-2 px-3">Judul Buku</th>
-                                <th class="py-2 px-3">No. Induk</th>
-                                <th class="py-2 px-3">Tgl Pinjam</th>
-                                <th class="py-2 px-3">Jatuh Tempo</th>
-                                <th class="py-2 px-3">Dikembalikan</th>
-                                <th class="py-2 px-3 text-center">Status</th>
+                                <th class="py-2 px-3 border">Peminjam</th>
+                                <th class="py-2 px-3 border">Role</th>
+                                <th class="py-2 px-3 border">Judul Buku</th>
+                                <th class="py-2 px-3 border">No. Induk</th>
+                                <th class="py-2 px-3 border">Tgl Pinjam</th>
+                                <th class="py-2 px-3 border">Jatuh Tempo</th>
+                                <th class="py-2 px-3 border">Dikembalikan</th>
+                                <th class="py-2 px-3 border text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($loans as $loan)
                                 <tr class="border-b border-gray-300 dark:border-gray-700">
-                                    <td class="py-2 px-3 text-center">
+                                    <td class="py-2 px-3 border text-center">
                                         @if(in_array($loan->status, ['aktif', 'terlambat']))
                                             <input type="checkbox" name="loan_ids[]" value="{{ $loan->id }}"
                                                 class="loan-checkbox">
                                         @endif
                                     </td>
-                                    <td class="py-2 px-3">{{ $loan->user->nama }}</td>
-                                    <td class="py-2 px-3">{{ ucfirst($loan->user->role) }}</td>
-                                    <td class="py-2 px-3">{{ $loan->eksemplar->buku->judul }}</td>
-                                    <td class="py-2 px-3">{{ $loan->eksemplar->no_induk }}</td>
-                                    <td class="py-2 px-3">{{ $loan->tanggal_pinjam->format('d/m/Y') }}</td>
-                                    <td class="py-2 px-3">{{ $loan->tanggal_kembali?->format('d/m/Y') ?? '-' }}</td>
-                                    <td class="py-2 px-3">{{ $loan->tanggal_dikembalikan?->format('d/m/Y') ?? '-' }}</td>
-                                    <td class="py-2 px-3 text-center">
+                                    <td class="py-2 px-3 border">{{ $loan->user->nama }}</td>
+                                    <td class="py-2 px-3 border">{{ ucfirst($loan->user->role) }}</td>
+                                    <td class="py-2 px-3 border">{{ $loan->eksemplar->buku->judul }}</td>
+                                    <td class="py-2 px-3 border">{{ $loan->eksemplar->no_induk }}</td>
+                                    <td class="py-2 px-3 border">{{ $loan->tanggal_pinjam->format('d/m/Y') }}</td>
+                                    <td class="py-2 px-3 border">{{ $loan->tanggal_kembali?->format('d/m/Y') ?? '-' }}</td>
+                                    <td class="py-2 px-3 border">{{ $loan->tanggal_dikembalikan?->format('d/m/Y') ?? '-' }}</td>
+                                    <td class="py-2 px-3 border text-center">
                                         <span
                                             class="px-2 py-1 rounded-full text-xs font-semibold
                                                         @if($loan->status == 'aktif') bg-blue-100 text-blue-700
