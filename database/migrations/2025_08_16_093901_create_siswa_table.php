@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nipd')->nullable()->unique();
             $table->string('nisn')->nullable()->unique();
+            $table->enum('jenis_kelamin', ['L', 'P']);
             $table->foreignId('id_rombel')->constrained('rombel')->onDelete('cascade');
             $table->timestamps();
         });

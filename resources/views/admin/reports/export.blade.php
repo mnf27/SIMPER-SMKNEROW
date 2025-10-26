@@ -7,9 +7,10 @@
             <th style="font-weight:bold; background:#e5e7eb;">Role</th>
             <th style="font-weight:bold; background:#e5e7eb;">Rombel</th>
             <th style="font-weight:bold; background:#e5e7eb;">Judul Buku</th>
-            <th style="font-weight:bold; background:#e5e7eb;">Kategori</th>
+            <th style="font-weight:bold; background:#e5e7eb;">No. Eksemplar</th>
             <th style="font-weight:bold; background:#e5e7eb;">Tanggal Pinjam</th>
             <th style="font-weight:bold; background:#e5e7eb;">Tanggal Kembali</th>
+            <th style="font-weight:bold; background:#e5e7eb;">Tanggal Dikembalikan</th>
             <th style="font-weight:bold; background:#e5e7eb;">Status</th>
         </tr>
     </thead>
@@ -21,10 +22,11 @@
                 <td>{{ $item->user->nama ?? '-' }}</td>
                 <td>{{ ucfirst($item->user->role ?? '-') }}</td>
                 <td>{{ $item->user->siswa->rombel->nama ?? '-' }}</td>
-                <td>{{ $item->buku->judul ?? '-' }}</td>
-                <td>{{ $item->buku->category->nama ?? '-' }}</td>
-                <td>{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d/m/Y') }}</td>
-                <td>{{ $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d/m/Y') : '-' }}</td>
+                <td>{{ $item->eksemplar->buku->judul ?? '-' }}</td>
+                <td>{{ $item->eksemplar->no_induk ?? '-' }}</td>
+                <td>{{ optional($item->tanggal_pinjam)->format('d/m/Y') ?? '-' }}</td>
+                <td>{{ optional($item->tanggal_kembali)->format('d/m/Y') ?? '-' }}</td>
+                <td>{{ optional($item->tanggal_dikembalikan)->format('d/m/Y') ?? '-' }}</td>
                 <td>{{ ucfirst($item->status ?? '-') }}</td>
             </tr>
         @empty

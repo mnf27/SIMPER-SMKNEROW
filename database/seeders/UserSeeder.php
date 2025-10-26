@@ -16,10 +16,8 @@ class UserSeeder extends Seeder
         User::create([
             'nama' => 'Administrator',
             'username' => 'admin',
-            'email' => 'admin@smknrowo.sch.id',
             'password' => Hash::make('simperpus123'),
             'role' => 'admin',
-            'jenis_kelamin' => 'P',
         ]);
     }
 }

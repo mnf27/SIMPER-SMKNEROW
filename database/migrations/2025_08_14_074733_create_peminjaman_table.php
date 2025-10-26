@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
             $table->foreignId('eksemplar_id')->constrained('eksemplar')->onDelete('cascade');
             $table->date('tanggal_pinjam');
-            $table->date('tanggal_kembali');
+            $table->date('tanggal_kembali')->nullable();
             $table->date('tanggal_dikembalikan')->nullable();
             $table->enum('status', ['aktif', 'dikembalikan', 'terlambat'])->default('aktif');
             $table->integer('jumlah')->default(1);

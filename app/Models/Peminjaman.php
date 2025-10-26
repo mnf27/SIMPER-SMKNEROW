@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Peminjaman extends Model
 {
@@ -41,7 +42,14 @@ class Peminjaman extends Model
 
     public function buku()
     {
-        return $this->hasOneThrough(Buku::class, Eksemplar::class, 'id', 'id', 'eksemplar_id', 'buku_id');
+        return $this->hasOneThrough(
+            Buku::class,
+            Eksemplar::class,
+            'id',
+            'id',
+            'eksemplar_id',
+            'buku_id'
+        );
     }
 
     // Accessor untuk status label

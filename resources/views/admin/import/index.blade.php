@@ -33,7 +33,6 @@
                             <tr>
                                 <th class="px-4 py-2 border">Nama</th>
                                 <th class="px-4 py-2 border">Username</th>
-                                <th class="px-4 py-2 border">Email</th>
                                 <th class="px-4 py-2 border">NIP</th>
                                 <th class="px-4 py-2 border">NUPTK</th>
                             </tr>
@@ -43,7 +42,6 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td class="px-4 py-2 border">{{ $g->user->nama }}</td>
                                     <td class="px-4 py-2 border">{{ $g->user->username }}</td>
-                                    <td class="px-4 py-2 border">{{ $g->user->email }}</td>
                                     <td class="px-4 py-2 border">{{ $g->nip }}</td>
                                     <td class="px-4 py-2 border">{{ $g->nuptk }}</td>
                                 </tr>
@@ -88,7 +86,6 @@
                             <tr>
                                 <th class="px-4 py-2 border">Nama</th>
                                 <th class="px-4 py-2 border">Username</th>
-                                <th class="px-4 py-2 border">Email</th>
                                 <th class="px-4 py-2 border">NIPD</th>
                                 <th class="px-4 py-2 border">NISN</th>
                             </tr>
@@ -98,7 +95,6 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td class="px-4 py-2 border">{{ $s->user->nama }}</td>
                                     <td class="px-4 py-2 border">{{ $s->user->username }}</td>
-                                    <td class="px-4 py-2 border">{{ $s->user->email }}</td>
                                     <td class="px-4 py-2 border">{{ $s->nipd }}</td>
                                     <td class="px-4 py-2 border">{{ $s->nisn }}</td>
                                 </tr>

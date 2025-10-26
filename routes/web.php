@@ -45,7 +45,12 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
         Route::post('/loans/store', [LoanController::class, 'store'])->name('loans.store');
-        Route::post('/loans/{loan}/return', [LoanController::class, 'returnBook'])->name('loans.return');
+        Route::get('/loans/get-guru', [LoanController::class, 'getGuru'])->name('loans.getGuru');
+        Route::get('/loans/get-siswa/{rombel}', [LoanController::class, 'getSiswa'])->name('loans.getSiswa');
+        Route::get('/loans/check-limit/{userId}', [LoanController::class, 'checkLimit'])->name('loans.checkLimit');
+        Route::get('/loans/check-duplicate/{userId}/{bukuId}', [LoanController::class, 'checkDuplicate'])->name('loans.checkDuplicate');
+        Route::get('/loans/get-eksemplar/{bukuId}', [LoanController::class, 'getEksemplar'])->name('loans.getEksemplar');
+        Route::post('/loans/return-multiple', [LoanController::class, 'returnMultiple'])->name('loans.return-multiple');
 
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');

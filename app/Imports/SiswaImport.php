@@ -62,10 +62,8 @@ class SiswaImport implements ToCollection
             $user = User::create([
                 'nama' => $nama,
                 'username' => $username,
-                'email' => $username . '@smkrowo.sch.id',
                 'password' => Hash::make('123456'),
                 'role' => 'siswa',
-                'jenis_kelamin' => $jk,
             ]);
 
             Siswa::create([
@@ -73,6 +71,7 @@ class SiswaImport implements ToCollection
                 'nipd' => $nipd,
                 'nisn' => $nisn,
                 'id_rombel' => $rombel ? $rombel->id : null,
+                'jenis_kelamin' => $jk,
             ]);
         }
     }

@@ -15,6 +15,7 @@ class Siswa extends Model
         'user_id',
         'nipd',
         'nisn',
+        'jenis_kelamin',
         'id_rombel',
     ];
 

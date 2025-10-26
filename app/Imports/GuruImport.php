@@ -32,16 +32,15 @@ class GuruImport implements ToCollection
             $user = User::create([
                 'nama' => $nama,
                 'username' => $username,
-                'email' => $username . '@smkrowo.sch.id',
                 'password' => Hash::make('123456'),
                 'role' => 'guru',
-                'jenis_kelamin' => $jk,
             ]);
 
             Guru::create([
                 'user_id' => $user->id,
                 'nuptk' => $nuptk,
                 'nip' => $nip,
+                'jenis_kelamin' => $jk,
                 'status_kepegawaian' => $status,
             ]);
         }

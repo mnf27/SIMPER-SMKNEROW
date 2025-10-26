@@ -15,6 +15,7 @@ class Guru extends Model
         'user_id',
         'nuptk',
         'nip',
+        'jenis_kelamin',
         'status_kepegawaian',
     ];
 

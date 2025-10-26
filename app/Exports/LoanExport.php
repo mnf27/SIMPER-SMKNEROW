@@ -21,14 +21,14 @@ class LoanExport implements FromView, WithTitle
 
     public function view(): View
     {
-        $query = Peminjaman::with(['user', 'buku.kategori', 'user.siswa.rombel'])
+        $query = Peminjaman::with(['user', 'user.siswa.rombel', 'eksemplar.buku'])
             ->orderBy('tanggal_pinjam', 'desc');
 
         // Filter tanggal
-        if ($this->filters->filled('start_date') && $this->filters->filled('end_date')) {
+        if ($this->filters->filled('tanggal_awal') && $this->filters->filled('tanggal_akhir')) {
             $query->whereBetween('tanggal_pinjam', [
-                $this->filters->start_date,
-                $this->filters->end_date
+                $this->filters->tanggal_awal,
+                $this->filters->tanggal_akhir
             ]);
         }
 
@@ -44,16 +44,11 @@ class LoanExport implements FromView, WithTitle
             });
         }
 
-        // Filter kategori
-        if ($this->filters->filled('category_id')) {
-            $query->whereHas('buku', function ($q) {
-                $q->where('id_kategori', $this->filters->category_id);
-            });
-        }
-
         // Filter buku
         if ($this->filters->filled('book_id')) {
-            $query->where('id_buku', $this->filters->book_id);
+            $query->whereHas('eksemplar.buku', function ($q) {
+                $q->where('id', $this->filters->book_id);
+            });
         }
 
         $peminjaman = $query->get();
@@ -63,6 +58,6 @@ class LoanExport implements FromView, WithTitle
 
     public function title(): string
     {
-        return 'Laporan Peminjaman';
+        return 'Laporan Peminjaman Buku';
     }
 }
