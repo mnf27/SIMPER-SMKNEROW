@@ -49,6 +49,23 @@ class Buku extends Model
         );
     }
 
+    public function getTotalEksemplarAttribute()
+    {
+        return $this->eksemplar()->count();
+    }
+
+    // Hitung jumlah eksemplar yang tersedia
+    public function getEksemplarTersediaAttribute()
+    {
+        return $this->eksemplar()->where('status', 'tersedia')->count();
+    }
+
+    // Hitung jumlah eksemplar yang sedang dipinjam
+    public function getEksemplarDipinjamAttribute()
+    {
+        return $this->eksemplar()->where('status', 'dipinjam')->count();
+    }
+
     public function getCoverImageUrlAttribute()
     {
         return $this->cover_image

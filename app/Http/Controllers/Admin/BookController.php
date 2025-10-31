@@ -33,7 +33,17 @@ class BookController extends Controller
 
     public function index()
     {
-        $books = Buku::latest()->paginate(10);
+        // Ambil buku sekaligus hitung jumlah eksemplar
+        $books = Buku::withCount([
+            'eksemplar as total_eksemplar',
+            'eksemplar as eksemplar_tersedia' => function ($query) {
+                $query->where('status', 'tersedia');
+            },
+            'eksemplar as eksemplar_dipinjam' => function ($query) {
+                $query->where('status', 'dipinjam');
+            },
+        ])->latest()->paginate(10);
+
         return view('admin.books.index', compact('books'));
     }
 

@@ -6,9 +6,9 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
             {{-- Filter --}}
-            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
+            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6 mb-6">
                 <form action="{{ route('admin.reports.index') }}" method="GET"
                     class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
@@ -94,7 +94,7 @@
                 </form>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
+            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6 mb-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div
                         class="bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-4">
@@ -129,7 +129,7 @@
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
+            <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6 mb-6">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
                     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">
                         Rekap Data Peminjaman

@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-8" x-data="{ openTambah: false, openEdit: false, selected: { id: '', nama: '', kelas: '' } }">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6" x-data="{ openTambah: false, openEdit: false, selected: { id: '', nama: '', kelas: '' } }">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Daftar Rombel</h3>
@@ -16,52 +16,53 @@
                     </button>
                 </div>
 
-                <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
-                    <thead class="bg-gray-200 dark:bg-gray-700">
-                        <tr>
-                            <th class="py-2 px-3 border">#</th>
-                            <th class="py-2 px-3 border">Tingkat</th>
-                            <th class="py-2 px-3 border">Jurusan</th>
-                            <th class="py-2 px-3 border">Nama Rombel</th>
-                            <th class="py-2 px-3 border text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($rombels as $rombel)
-                            <tr class="border-b border-gray-300 dark:border-gray-700">
-                                <td class="py-2 px-3 border">{{ $loop->iteration }}</td>
-                                <td class="py-2 px-3 border">{{ $rombel->tingkat }}</td>
-                                <td class="py-2 px-3 border">{{ $rombel->jurusan }}</td>
-                                <td class="py-2 px-3 border">{{ $rombel->nama }}</td>
-                                <td class="py-2 px-3 border text-center space-x-2">
-                                    <button @click="
-                                                                    openEdit = true;
-                                                                    selected.id = '{{ $rombel->id }}';
-                                                                    selected.tingkat = '{{ $rombel->tingkat }}';
-                                                                    selected.jurusan = '{{ $rombel->jurusan }}';
-                                                                    selected.nama = '{{ $rombel->nama }}';
-                                                                " class="text-black-500 hover:underline">
-                                        Edit
-                                    </button>
-                                    <form action="{{ route('admin.rombels.destroy', $rombel->id) }}" method="POST"
-                                        class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:underline"
-                                            onclick="return confirm('Yakin ingin menghapus rombel ini?')">
-                                            Hapus
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
+                        <thead class="bg-gray-200 dark:bg-gray-700">
                             <tr>
-                                <td colspan="5" class="text-center py-4">Belum ada data rombel.</td>
+                                <th class="py-2 px-3 border">#</th>
+                                <th class="py-2 px-3 border">Tingkat</th>
+                                <th class="py-2 px-3 border">Jurusan</th>
+                                <th class="py-2 px-3 border">Nama Rombel</th>
+                                <th class="py-2 px-3 border text-center">Aksi</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-
+                        </thead>
+                        <tbody>
+                            @forelse ($rombels as $rombel)
+                                <tr class="border-b border-gray-300 dark:border-gray-700">
+                                    <td class="py-2 px-3 border">{{ $loop->iteration }}</td>
+                                    <td class="py-2 px-3 border">{{ $rombel->tingkat }}</td>
+                                    <td class="py-2 px-3 border">{{ $rombel->jurusan }}</td>
+                                    <td class="py-2 px-3 border">{{ $rombel->nama }}</td>
+                                    <td class="py-2 px-3 border text-center space-x-2">
+                                        <button @click="
+                                                                        openEdit = true;
+                                                                        selected.id = '{{ $rombel->id }}';
+                                                                        selected.tingkat = '{{ $rombel->tingkat }}';
+                                                                        selected.jurusan = '{{ $rombel->jurusan }}';
+                                                                        selected.nama = '{{ $rombel->nama }}';
+                                                                    " class="text-black-500 hover:underline">
+                                            Edit
+                                        </button>
+                                        <form action="{{ route('admin.rombels.destroy', $rombel->id) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:underline"
+                                                onclick="return confirm('Yakin ingin menghapus rombel ini?')">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">Belum ada data rombel.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
                 <div class="mt-4">{{ $rombels->links() }}</div>
             </div>
 

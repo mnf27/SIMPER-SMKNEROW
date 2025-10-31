@@ -7,47 +7,61 @@ use App\Models\Peminjaman;
 use App\Models\Buku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class LoanController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
-        $judul = $request->judul; // kirimkan judul dari tombol "Pinjam" di view
+        $request->validate([
+            'eksemplar_id' => 'required|exists:eksemplar,id',
+        ]);
 
         // Cari salah satu buku dengan judul yang sama dan stok masih ada
-        $buku = Buku::where('judul', $judul)
-            ->where('jumlah_eksemplar', '>', 0)
-            ->first();
+        $buku = Buku::find($id);
 
         if (!$buku) {
-            return back()->with('error', 'Stok buku "' . $judul . '" habis.');
+            return back()->with('error', 'Data buku tidak ditemukan.');
+        }
+
+        $userId = Auth::id();
+
+        $jumlahHariIni = Peminjaman::where('id_user', $userId)
+            ->whereDate('tanggal_pinjam', now()->toDateString())
+            ->count();
+
+        if ($jumlahHariIni >= 2) {
+            return back()->with('error', 'Anda sudah mencapai batas 2 kali peminjaman hari ini.');
+        }
+
+        $masihMeminjam = Peminjaman::where('id_user', $userId)
+            ->whereIn('status', ['aktif', 'terlambat'])
+            ->exists();
+
+        if ($masihMeminjam) {
+            return back()->with('error', 'Anda masih memiliki buku yang belum dikembalikan.');
         }
 
         // Cek apakah user masih meminjam buku ini
-        $sudahPinjam = Peminjaman::where('id_user', Auth::id())
-            ->where('id_buku', $buku->id)
-            ->where('status', 'aktif')
+        $sudahPinjam = Peminjaman::where('id_user', $userId)
+            ->where('eksemplar_id', $request->eksemplar_id)
+            ->whereIn('status', ['aktif', 'menunggu'])
             ->exists();
 
         if ($sudahPinjam) {
-            return back()->with('error', 'Anda masih meminjam buku "' . $judul . '".');
+            return back()->with('error', 'Anda sudah meminjam eksemplar ini atau masih menunggu konfirmasi.');
         }
 
         // Simpan data peminjaman
         Peminjaman::create([
             'id_user' => Auth::id(),
-            'id_buku' => $buku->id,
-            'tanggal_pinjam' => Carbon::now(),
-            'tanggal_kembali' => Carbon::now()->addDays(7),
-            'status' => 'aktif',
+            'eksemplar_id' => $request->eksemplar_id,
+            'tanggal_pinjam' => now(),
+            'tanggal_kembali' => now(),
+            'status' => 'menunggu', // misal nanti akan dikonfirmasi admin
             'jumlah' => 1,
         ]);
 
-        // Kurangi stok buku
-        $buku->decrement('jumlah_eksemplar');
-
-        return back()->with('success', 'Buku "' . $judul . '" berhasil dipinjam.');
+        return back()->with('success', 'Permintaan peminjaman dikirim, silahkan konfirmasi ke admin.');
     }
 
     public function history()

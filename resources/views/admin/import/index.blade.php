@@ -25,7 +25,7 @@
             {{-- Table Guru --}}
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
                 <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                    Data Guru Terbaru
+                    Data Guru
                 </h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
@@ -79,7 +79,7 @@
             {{-- Table Siswa --}}
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
                 <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                    Data Siswa Terbaru
+                    Data Siswa
                 </h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">

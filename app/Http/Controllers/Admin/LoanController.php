@@ -41,6 +41,54 @@ class LoanController extends Controller
         return view('admin.loans.index', compact('loans', 'status', 'rombels', 'bukus', 'eksemplars'));
     }
 
+    public function confirm($id)
+    {
+        $peminjaman = Peminjaman::with(['eksemplar.buku', 'user'])->findOrFail($id);
+
+        if ($peminjaman->status !== 'menunggu') {
+            return back()->with('error', 'Peminjaman sudah diproses.');
+        }
+
+        // Tentukan tanggal pinjam dan tanggal kembali
+        $tanggalPinjam = now();
+        $tanggalKembali = null;
+
+        if ($peminjaman->user->role === 'siswa') {
+            // Siswa hanya boleh pinjam untuk hari ini
+            $tanggalKembali = $tanggalPinjam;
+        } elseif ($peminjaman->user->role === 'guru') {
+            // Guru bebas, tidak ada batas waktu (biarkan null)
+            $tanggalKembali = null;
+        }
+
+        // Update status peminjaman
+        $peminjaman->update([
+            'status' => 'aktif',
+            'tanggal_pinjam' => $tanggalPinjam,
+            'tanggal_kembali' => $tanggalKembali,
+        ]);
+
+        // Ubah status eksemplar menjadi "dipinjam"
+        if ($peminjaman->eksemplar) {
+            $peminjaman->eksemplar->update(['status' => 'dipinjam']);
+        }
+
+        return back()->with('success', 'Peminjaman berhasil dikonfirmasi.');
+    }
+
+    public function reject($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        if ($peminjaman->status !== 'menunggu') {
+            return back()->with('error', 'Peminjaman sudah diproses.');
+        }
+
+        $peminjaman->update(['status' => 'ditolak']); // pastikan enum 'ditolak' sudah ada di migration
+
+        return back()->with('info', 'Peminjaman berhasil ditolak.');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -136,7 +184,8 @@ class LoanController extends Controller
         $loanIds = $request->loan_ids;
 
         // Ambil data peminjaman yang masih aktif atau terlambat saja
-        $loans = Peminjaman::whereIn('id', $loanIds)
+        $loans = Peminjaman::with('eksemplar.buku')
+            ->whereIn('id', $loanIds)
             ->whereIn('status', ['aktif', 'terlambat'])
             ->get();
 
@@ -152,6 +201,11 @@ class LoanController extends Controller
 
             if ($loan->eksemplar) {
                 $loan->eksemplar->update(['status' => 'tersedia']);
+
+                $buku = $loan->eksemplar->buku;
+                if ($buku) {
+                    $buku->increment('jumlah_eksemplar', 1);
+                }
             }
         }
 

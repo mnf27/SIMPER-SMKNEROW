@@ -54,7 +54,7 @@
                                     <td class="px-3 py-2 border">{{ $book->klasifikasi }}</td>
                                     <td class="px-3 py-2 border">{{ $book->asal }}</td>
                                     <td class="px-3 py-2 border text-center">{{ $book->tahun_terbit }}</td>
-                                    <td class="px-3 py-2 border text-center font-semibold">{{ $book->jumlah_eksemplar }}
+                                    <td class="px-3 py-2 border text-center font-semibold">{{ $book->eksemplar_tersedia }}
                                     <td class="px-3 py-2 border">{{ $book->keterangan }}</td>
                                     </td>
                                     <td class="px-3 py-2 border text-center flex justify-center gap-2">

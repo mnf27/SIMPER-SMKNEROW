@@ -9,7 +9,7 @@
             openTambah: false 
         }">
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
 
                 {{-- Header card --}}
@@ -24,11 +24,14 @@
                             <select name="status" onchange="this.form.submit()"
                                 class="rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="">Semua Status</option>
+                                <option value="menunggu" {{ request('status') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
                                 <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                                 <option value="dikembalikan" {{ request('status') == 'dikembalikan' ? 'selected' : '' }}>
                                     Dikembalikan</option>
                                 <option value="terlambat" {{ request('status') == 'terlambat' ? 'selected' : '' }}>
                                     Terlambat</option>
+                                <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>
+                                    Ditolak</option>
                             </select>
 
                             <input type="text" name="search" value="{{ request('search') }}"
@@ -51,13 +54,14 @@
 
                 <form action="{{ route('admin.loans.return-multiple') }}" method="POST" id="mass-return-form">
                     @csrf
-                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+                    <div class="flex sm:flex-row justify-between items-center gap-4 mb-4">
                         <button type="submit" onclick="return confirm('Yakin ingin mengembalikan semua yang dipilih?')"
                             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
                             Kembalikan
                         </button>
                     </div>
 
+                    <div class="overflow-x-auto">
                     {{-- Tabel --}}
                     <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
                         <thead class="bg-gray-200 dark:bg-gray-700">
@@ -90,15 +94,42 @@
                                     <td class="py-2 px-3 border">{{ $loan->eksemplar->no_induk }}</td>
                                     <td class="py-2 px-3 border">{{ $loan->tanggal_pinjam->format('d/m/Y') }}</td>
                                     <td class="py-2 px-3 border">{{ $loan->tanggal_kembali?->format('d/m/Y') ?? '-' }}</td>
-                                    <td class="py-2 px-3 border">{{ $loan->tanggal_dikembalikan?->format('d/m/Y') ?? '-' }}</td>
-                                    <td class="py-2 px-3 border text-center">
+                                    <td class="py-2 px-3 border">{{ $loan->tanggal_dikembalikan?->format('d/m/Y') ?? '-' }}
+                                    </td>
+                                    <td class="py-2 px-3 border text-center space-y-2">
                                         <span
-                                            class="px-2 py-1 rounded-full text-xs font-semibold
-                                                        @if($loan->status == 'aktif') bg-blue-100 text-blue-700
-                                                        @elseif($loan->status == 'dikembalikan') bg-green-100 text-green-700
-                                                        @elseif($loan->status == 'terlambat') bg-red-100 text-red-700 @endif">
+                                            class="block px-2 py-1 rounded-full text-xs font-semibold
+                                                                                    @if($loan->status == 'aktif') bg-blue-100 text-blue-700
+                                                                                    @elseif($loan->status == 'dikembalikan') bg-green-100 text-green-700
+                                                                                    @elseif($loan->status == 'terlambat') bg-red-100 text-red-700
+                                                                                    @elseif($loan->status == 'menunggu') bg-yellow-100 text-yellow-700 @endif">
                                             {{ ucfirst($loan->status) }}
                                         </span>
+
+                                        @if($loan->status === 'menunggu')
+                                            <div class="flex justify-center gap-2 mt-2">
+                                                <form action="{{ route('admin.loans.confirm', $loan->id) }}" method="POST"
+                                                    onsubmit="return confirm('Konfirmasi peminjaman ini?')"
+                                                    class="inline-block">
+                                                    @csrf
+                                                    <button type="submit" formmethod="POST"
+                                                        formaction="{{ route('admin.loans.confirm', $loan->id) }}"
+                                                        class="px-3 py-1 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition">
+                                                        Konfirmasi
+                                                    </button>
+                                                </form>
+
+                                                <form action="{{ route('admin.loans.reject', $loan->id) }}" method="POST"
+                                                    onsubmit="return confirm('Tolak peminjaman ini?')" class="inline-block">
+                                                    @csrf
+                                                    <button type="submit" formmethod="POST"
+                                                        formaction="{{ route('admin.loans.reject', $loan->id) }}"
+                                                        class="px-3 py-1 bg-red-600 text-white text-xs rounded-lg hover:bg-red-700 transition">
+                                                        Tolak
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
@@ -108,6 +139,7 @@
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
                     <div class="mt-4">{{ $loans->appends(request()->query())->links() }}</div>
                 </form>
             </div>

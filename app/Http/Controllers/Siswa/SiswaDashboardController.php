@@ -11,7 +11,7 @@ class SiswaDashboardController extends Controller
     public function index()
     {
         return view('siswa.dashboard', [
-            'peminjaman_saya' => Peminjaman::where('id_user', Auth::id())->get(),
+            'peminjaman_saya' => Peminjaman::where('id_user', Auth::id())->paginate(10),
         ]);
     }
 }

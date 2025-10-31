@@ -12,37 +12,34 @@ class LoanController extends Controller
 {
     public function store(Request $request, $id)
     {
+        $request->validate([
+            'eksemplar_id' => 'required|exists:eksemplar,id',
+        ]);
+
         $buku = Buku::find($id);
 
         if (!$buku) {
             return back()->with('error', 'Data buku tidak ditemukan.');
         }
 
-        if ($buku->jumlah_eksemplar <= 0) {
-            return back()->with('error', 'Stok buku habis, tidak dapat dipinjam.');
-        }
-
         $sudahPinjam = Peminjaman::where('id_user', Auth::id())
-            ->where('id_buku', $buku->id)
-            ->where('status', 'aktif')
+            ->where('eksemplar_id', $request->eksemplar_id)
+            ->whereIn('status', ['aktif', 'menunggu'])
             ->exists();
 
         if ($sudahPinjam) {
-            return back()->with('error', 'Anda masih meminjam buku ini.');
+            return back()->with('error', 'Anda sudah meminjam eksemplar ini atau masih menunggu konfirmasi.');
         }
 
         Peminjaman::create([
             'id_user' => Auth::id(),
-            'id_buku' => $buku->id,
+            'eksemplar_id' => $request->eksemplar_id,
             'tanggal_pinjam' => now(),
-            'tanggal_kembali' => now()->addDays(7),
-            'status' => 'aktif',
+            'status' => 'menunggu', // misal nanti akan dikonfirmasi admin
             'jumlah' => 1,
         ]);
 
-        $buku->decrement('jumlah_eksemplar');
-
-        return back()->with('success', 'Buku berhasil dipinjam.');
+        return back()->with('success', 'Permintaan peminjaman dikirim, silahkan konfirmasi ke admin.');
     }
 
     public function history()
