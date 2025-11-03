@@ -10,7 +10,7 @@
             {{-- Welcome --}}
             <div class="bg-white dark:bg-gray-800 shadow rounded-2xl p-6 mb-6">
                 <h3 class="text-lg font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                    Selamat datang, Pak/Bu {{ auth()->user()->nama }}
+                    Selamat datang, {{ auth()->user()->nama }}
                 </h3>
             </div>
 
