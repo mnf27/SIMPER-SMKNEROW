@@ -84,7 +84,7 @@
                             @empty
                                 <tr>
                                     <td colspan="10" class="p-4 text-center text-gray-500">
-                                        Belum ada buku 📚
+                                        Belum ada buku
                                     </td>
                                 </tr>
                             @endforelse
@@ -161,7 +161,7 @@
                         </template>
 
                         <template x-if="!selectedDetail.eksemplar.length">
-                            <p class="text-gray-500 text-center py-6">Belum ada eksemplar untuk buku ini 📚</p>
+                            <p class="text-gray-500 text-center py-6">Belum ada eksemplar untuk buku ini</p>
                         </template>
                     </div>
                 </template>
