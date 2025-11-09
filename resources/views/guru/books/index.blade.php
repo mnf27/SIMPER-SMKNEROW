@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-6" x-data="{ openPinjam: false, selectedBook: null, eksemplars: [] }">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 lg:px-5">
             <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
                     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">

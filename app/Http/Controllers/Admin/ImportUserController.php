@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Guru;
 use App\Models\Siswa;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\GuruImport;
 use App\Imports\SiswaImport;
@@ -40,5 +42,17 @@ class ImportUserController extends Controller
         Excel::import(new SiswaImport, $request->file('file'));
 
         return back()->with('success', 'Data siswa berhasil diimport');
+    }
+
+    public function resetPassword($id)
+    {
+        $user = User::findOrFail($id);
+
+        $defaultPassword = '123456';
+
+        $user->password = Hash::make($defaultPassword);
+        $user->save();
+
+        return back()->with('success', "Password untuk {$user->nama} telah direset ke sandi default: 123456");
     }
 }

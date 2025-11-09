@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\LoanController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Guru\GuruDashboardController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Siswa\SiswaDashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,10 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     // Dashboard per role
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
         ->middleware('role:admin')
@@ -32,6 +37,8 @@ Route::middleware(['auth'])->group(function () {
     // ROUTE ADMIN
     // =====================
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::put('/import/{id}/reset-password', [ImportUserController::class, 'resetPassword'])
+            ->name('import.reset-password');
         Route::get('/import', [ImportUserController::class, 'index'])->name('import.index');
         Route::post('/import-guru', [ImportUserController::class, 'importGuru'])->name('import.guru');
         Route::post('/import-siswa', [ImportUserController::class, 'importSiswa'])->name('import.siswa');

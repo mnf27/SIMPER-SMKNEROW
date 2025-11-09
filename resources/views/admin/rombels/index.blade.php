@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-6" x-data="{ openTambah: false, openEdit: false, selected: { id: '', nama: '', kelas: '' } }">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 lg:px-5">
             <div class="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Daftar Rombel</h3>

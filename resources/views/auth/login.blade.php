@@ -69,20 +69,20 @@
     </form>
 </x-guest-layout>
 
-<!-- Script Toggle Password -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const pwd = document.getElementById('password');
-        const toggle = document.getElementById('togglePassword');
-        const eyeOpen = document.getElementById('eyeOpen');
-        const eyeClosed = document.getElementById('eyeClosed');
+    <!-- Script Toggle Password -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const pwd = document.getElementById('password');
+            const toggle = document.getElementById('togglePassword');
+            const eyeOpen = document.getElementById('eyeOpen');
+            const eyeClosed = document.getElementById('eyeClosed');
 
-        toggle.addEventListener('click', function () {
-            const hidden = pwd.type === 'password';
-            pwd.type = hidden ? 'text' : 'password';
-            eyeOpen.classList.toggle('hidden', !hidden);
-            eyeClosed.classList.toggle('hidden', hidden);
-            toggle.title = hidden ? 'Sembunyikan password' : 'Tampilkan password';
+            toggle.addEventListener('click', function () {
+                const hidden = pwd.type === 'password';
+                pwd.type = hidden ? 'text' : 'password';
+                eyeOpen.classList.toggle('hidden', !hidden);
+                eyeClosed.classList.toggle('hidden', hidden);
+                toggle.title = hidden ? 'Sembunyikan password' : 'Tampilkan password';
+            });
         });
-    });
-</script>
+    </script>

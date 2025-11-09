@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-6" x-data="bookModal()">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 lg:px-5">
             {{-- Action Bar --}}
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow mb-6">
                 <h3 class="text-lg font-semibold flex items-center gap-2 mb-4 text-gray-700 dark:text-gray-200">

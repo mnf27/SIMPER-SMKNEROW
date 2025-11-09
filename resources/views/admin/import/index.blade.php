@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Import User') }}
+            {{ __('Kelola User') }}
         </h2>
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-8">
+        <div class="max-w-7xl mx-auto px-4 lg:px-5 space-y-8">
 
             {{-- Form Import Guru --}}
             <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow">
@@ -37,6 +37,7 @@
                                 <th class="px-3 py-2 border">NUPTK</th>
                                 <th class="px-3 py-2 border">Jenis Kelamin</th>
                                 <th class="px-3 py-2 border">Status Kepegawaian</th>
+                                <th class="px-3 py-2 border text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,6 +49,17 @@
                                     <td class="px-3 py-2 border">{{ $g->nuptk }}</td>
                                     <td class="px-3 py-2 border">{{ $g->jenis_kelamin }}</td>
                                     <td class="px-3 py-2 border">{{ $g->status_kepegawaian }}</td>
+                                    <td class="px-3 py-2 border text-center">
+                                        <form action="{{ route('admin.import.reset-password', $g->user->id) }}" method="POST"
+                                            onsubmit="return confirm('Reset password untuk {{ $g->user->nama }}?')">
+                                            @csrf
+                                            @method('PUT')
+                                            <x-primary-button
+                                                class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-md">
+                                                Reset
+                                            </x-primary-button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -91,6 +103,7 @@
                                 <th class="px-3 py-2 border">Jenis Kelamin</th>
                                 <th class="px-3 py-2 border">NISN</th>
                                 <th class="px-3 py-2 border">Rombel</th>
+                                <th class="px-3 py-2 border text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -102,6 +115,17 @@
                                     <td class="px-3 py-2 border">{{ $s->jenis_kelamin }}</td>
                                     <td class="px-3 py-2 border">{{ $s->nisn }}</td>
                                     <td class="px-3 py-2 border">{{ $s->rombel->nama }}</td>
+                                    <td class="px-3 py-2 border text-center">
+                                        <form action="{{ route('admin.import.reset-password', $s->user->id) }}" method="POST"
+                                            onsubmit="return confirm('Reset password untuk {{ $s->user->nama }}?')">
+                                            @csrf
+                                            @method('PUT')
+                                            <x-primary-button
+                                                class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-md">
+                                                Reset
+                                            </x-primary-button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
