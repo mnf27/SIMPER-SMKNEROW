@@ -21,9 +21,14 @@ class BookController extends Controller
             },
         ]);
 
-        // Filter pencarian
+        // Filter pencarian (judul + penulis)
         if ($request->filled('search')) {
-            $query->where('judul', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', '%' . $search . '%')
+                    ->orWhere('penulis', 'like', '%' . $search . '%');
+            });
         }
 
         $buku = $query->latest()->paginate(10);
